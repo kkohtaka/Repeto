@@ -49,17 +49,17 @@ Repeto（リピート）
 
 #### タスク
 - [x] ドキュメント作成
-- [ ] .gitignore設定（iOS/Xcode用）
-- [ ] Xcodeプロジェクト作成
+- [x] .gitignore設定（iOS/Xcode用）
+- [x] Xcodeプロジェクト作成
 - [ ] 証明書・プロビジョニングプロファイル取得
   - Distribution Certificate
   - App Store Distribution Profile
 - [ ] App Store Connect API Key取得（CI/CD用）
 - [ ] プライバシーポリシー作成（TestFlight配信に必要）
-- [ ] iCloud Capability設定（CloudKit有効化）
-- [ ] Core Dataスキーマ定義
-- [ ] Taskエンティティ作成
-- [ ] NSPersistentCloudKitContainer設定
+- [x] iCloud Capability設定（CloudKit有効化）
+- [x] Core Dataスキーマ定義
+- [x] Taskエンティティ作成
+- [x] NSPersistentCloudKitContainer設定
 - [ ] GitHub Actions CI/CD構築
   - ビルド自動化
   - TestFlight自動配信
