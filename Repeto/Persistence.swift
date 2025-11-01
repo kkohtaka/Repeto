@@ -11,17 +11,34 @@ struct PersistenceController {
     static let shared = PersistenceController()
 
     static var preview: PersistenceController = {
-         let controller = PersistenceController(inMemory: true)
-         let viewContext = controller.container.viewContext
-         
-         do {
-             try viewContext.save()
-         } catch {
-             let nsError = error as NSError
-             fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-         }
-         
-         return controller
+        let controller = PersistenceController(inMemory: true)
+        let viewContext = controller.container.viewContext
+
+        // プレビュー用のサンプルデータを追加
+        for i in 0..<5 {
+            let newTask = Task(context: viewContext)
+            newTask.id = UUID()
+            newTask.name = "Sample Task \(i + 1)"
+            newTask.intervalDays = Int32((i + 1) * 7)
+            newTask.createdAt = Date()
+            newTask.updatedAt = Date()
+            newTask.isArchived = false
+
+            if i < 2 {
+                // 最初の2つは完了済みとして設定
+                newTask.lastCompletedAt = Date().addingTimeInterval(-Double(i + 1) * 86400)
+                newTask.nextReminderAt = Date().addingTimeInterval(Double((i + 1) * 7) * 86400)
+            }
+        }
+
+        do {
+            try viewContext.save()
+        } catch {
+            let nsError = error as NSError
+            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+        }
+
+        return controller
     }()
 
     let container: NSPersistentCloudKitContainer
