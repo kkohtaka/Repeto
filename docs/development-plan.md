@@ -23,7 +23,8 @@ Repeto（リピート）
 ## 技術スタック
 
 ### 開発環境
-- **IDE**: Xcode 15.0+
+- **IDE**: Xcode 26.0+
+- **macOS**: Sequoia 15.0+
 - **言語**: Swift 5.9+
 - **最小サポートバージョン**: iOS 16.0+
 
@@ -33,6 +34,11 @@ Repeto（リピート）
 - **通知**: UserNotifications framework
 - **同期**: NSPersistentCloudKitContainer
 - **アーキテクチャ**: MVVM
+
+### CI/CD
+- **GitHub Actions**: 自動ビルド・TestFlight配信
+- **実行環境**: macOS 26 runners
+- **Xcode**: 26.0.1
 
 ---
 
@@ -51,16 +57,18 @@ Repeto（リピート）
 - [x] ドキュメント作成
 - [x] .gitignore設定（iOS/Xcode用）
 - [x] Xcodeプロジェクト作成
-- [ ] 証明書・プロビジョニングプロファイル取得
+- [x] 証明書・プロビジョニングプロファイル取得
   - Distribution Certificate
   - App Store Distribution Profile
-- [ ] App Store Connect API Key取得（CI/CD用）
-- [ ] プライバシーポリシー作成（TestFlight配信に必要）
+- [x] App Store Connect API Key取得（CI/CD用）
+- [x] App Store Connectでアプリ登録
+- [x] プライバシーポリシー作成・公開（TestFlight配信に必須）
+- [x] Export Compliance設定（Info.plist）
 - [x] iCloud Capability設定（CloudKit有効化）
 - [x] Core Dataスキーマ定義
 - [x] Taskエンティティ作成
 - [x] NSPersistentCloudKitContainer設定
-- [ ] GitHub Actions CI/CD構築
+- [x] GitHub Actions CI/CD構築
   - ビルド自動化
   - TestFlight自動配信
   - 実機で触れる成果物の継続的提供
@@ -133,6 +141,7 @@ Repeto（リピート）
 品質保証とバグ修正
 
 #### タスク
+- [ ] Xcodeスキームのテスト設定（CI/CD用）
 - [ ] ユニットテスト（モデルロジック）
 - [ ] UIテスト（主要フロー）
 - [ ] バグ修正
@@ -140,6 +149,7 @@ Repeto（リピート）
 
 #### 成果物
 - 安定版アプリ
+- テストカバレッジ
 
 ---
 
