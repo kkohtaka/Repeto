@@ -16,9 +16,9 @@ Repetoは、掃除や買い物などの定期的に繰り返すタスクを管�
 
 ## ドキュメント
 
-- [開発プランドキュメント](docs/development-plan.md) - プロジェクトの開発計画、フェーズ、技術スタック
-- [デザインドキュメント](docs/design.md) - アーキテクチャ、データモデル、UI/UX設計
-- [CI/CDセットアップガイド](docs/cicd-setup.md) - GitHub Actionsによる自動ビルド・TestFlight配信
+- [開発プランドキュメント](documentation/development-plan.md) - プロジェクトの開発計画、フェーズ、技術スタック
+- [デザインドキュメント](documentation/design.md) - アーキテクチャ、データモデル、UI/UX設計
+- [CI/CDセットアップガイド](documentation/cicd-setup.md) - GitHub Actionsによる自動ビルド・TestFlight配信
 
 ## 開発状況
 
