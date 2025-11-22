@@ -133,19 +133,19 @@ jobs:
         env:
           API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
           API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
-          API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+          API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
         run: |
-          # Create API Key file
-          API_KEY_PATH=$RUNNER_TEMP/AuthKey_$API_KEY_ID.p8
-          echo -n "$API_KEY_BASE64" | base64 --decode -o $API_KEY_PATH
+          # Create API Key directory and file
+          mkdir -p ~/.appstoreconnect/private_keys
+          API_KEY_PATH=~/.appstoreconnect/private_keys/AuthKey_$API_KEY_ID.p8
+          echo "$API_KEY_CONTENT" > $API_KEY_PATH
 
           # Upload to TestFlight using xcrun altool
           xcrun altool --upload-app \
             --type ios \
             --file $RUNNER_TEMP/export/Repeto.ipa \
             --apiKey $API_KEY_ID \
-            --apiIssuer $API_ISSUER_ID \
-            --apple-id $(xcrun agvtool what-version -terse)
+            --apiIssuer $API_ISSUER_ID
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4

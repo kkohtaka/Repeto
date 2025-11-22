@@ -16,7 +16,7 @@ TestFlight自動配信に必要な秘密情報をGitHub Secretsに登録して�
 | `APPLE_CERTIFICATE_BASE64` | Distribution証明書（.p12形式、Base64エンコード） | 年1回更新が必要 |
 | `APPLE_CERTIFICATE_PASSWORD` | 証明書のパスワード | - |
 | `APPLE_PROVISION_PROFILE_BASE64` | App Store Distribution Profile（Base64エンコード） | 証明書更新時に再作成が必要 |
-| `APP_STORE_CONNECT_API_KEY` | App Store Connect APIキー（.p8形式、Base64エンコード） | - |
+| `APP_STORE_CONNECT_API_KEY` | App Store Connect APIキー（.p8ファイルの内容） | - |
 | `APP_STORE_CONNECT_ISSUER_ID` | App Store Connect Issuer ID | - |
 | `APP_STORE_CONNECT_KEY_ID` | App Store Connect Key ID | - |
 
