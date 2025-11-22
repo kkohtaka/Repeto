@@ -26,22 +26,27 @@ jobs:
       - name: Show Swift version
         run: swift --version
 
-      - name: Cache Swift Package Manager
+      - name: List available simulators
+        run: xcrun simctl list devices available iOS
+
+      - name: Cache DerivedData
         uses: actions/cache@v4
         with:
-          path: |
-            .build
-            ~/Library/Developer/Xcode/DerivedData
-          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-deriveddata-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-spm-
+            ${{ runner.os }}-deriveddata-
 
       - name: Build project
         run: |
+          # Get first available iOS simulator UUID
+          SIMULATOR=$(xcrun simctl list devices available iOS | grep -m 1 "iPhone" | grep -oE '[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}')
+          echo "Using simulator: $SIMULATOR"
+
           xcodebuild clean build \
             -project Repeto.xcodeproj \
             -scheme Repeto \
-            -destination 'platform=iOS Simulator,OS=26.1,name=iPhone 17 Pro' \
+            -destination "platform=iOS Simulator,id=$SIMULATOR" \
             -configuration Debug \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \

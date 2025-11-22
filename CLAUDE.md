@@ -20,7 +20,7 @@
 
 ### 4. Pre-Commit/Push
 - [ ] Run SwiftLint: `swiftlint`
-- [ ] Run tests: `xcodebuild test -scheme Repeto -destination 'platform=iOS Simulator,name=iPhone 17 Pro'`
+- [ ] Run tests: `xcodebuild test -scheme Repeto -destination 'platform=iOS Simulator,name=Any iOS Simulator Device'`
 - [ ] Update CLAUDE.md if needed (for significant changes)
 - [ ] **Write commit message in Conventional Commits format (English)**
 
@@ -251,12 +251,25 @@ swiftlint lint --path Repeto/Services/
 
 ## Testing
 
+### Check available simulators
+```bash
+xcrun simctl list devices available iOS
+```
+
 ### Run all tests
 ```bash
+# Using any available iOS simulator
 xcodebuild test \
   -project Repeto.xcodeproj \
   -scheme Repeto \
-  -destination 'platform=iOS Simulator,OS=18.1,name=iPhone 17 Pro'
+  -destination 'platform=iOS Simulator,name=iPhone 15'
+
+# Or use the first available simulator dynamically
+SIMULATOR=$(xcrun simctl list devices available iOS | grep -m 1 "iPhone" | grep -oE '[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}')
+xcodebuild test \
+  -project Repeto.xcodeproj \
+  -scheme Repeto \
+  -destination "platform=iOS Simulator,id=$SIMULATOR"
 ```
 
 ### Run specific test
@@ -264,7 +277,7 @@ xcodebuild test \
 xcodebuild test \
   -project Repeto.xcodeproj \
   -scheme Repeto \
-  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
+  -destination 'platform=iOS Simulator,name=iPhone 15' \
   -only-testing:RepetoTests/TaskServiceTests
 ```
 
