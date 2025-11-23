@@ -5,6 +5,8 @@
 ### 1. Code Quality Checks
 
 - [ ] Verify SwiftLint shows zero errors
+- [ ] Verify markdownlint shows zero errors (for Markdown changes)
+- [ ] Verify actionlint shows zero errors (for workflow changes)
 - [ ] Confirm build succeeds (Simulator)
 - [ ] Verify all existing tests pass
 
@@ -23,7 +25,10 @@
 
 ### 4. Pre-Commit/Push
 
-- [ ] Run SwiftLint: `swiftlint`
+- [ ] Run linters:
+  - SwiftLint: `swiftlint`
+  - Markdownlint (if Markdown changed): `npx markdownlint-cli2 "**/*.md"`
+  - Actionlint (if workflows changed): `actionlint`
 - [ ] Run tests: `xcodebuild test -scheme Repeto -destination 'platform=iOS Simulator,name=Any iOS Simulator Device'`
 - [ ] Update CLAUDE.md if needed (for significant changes)
 - [ ] **Write commit message in Conventional Commits format (English)**
@@ -246,7 +251,8 @@ update files
 
 ## Checking CI Status (Claude Code on Web)
 
-When working in Claude Code on the web, the GitHub CLI (`gh`) may not be available. Use the GitHub REST API with `curl` to check CI status.
+When working in Claude Code on the web, the GitHub CLI (`gh`) may not be available.
+Use the GitHub REST API with `curl` to check CI status.
 
 ### Prerequisites
 
@@ -271,6 +277,7 @@ curl -s -H "Authorization: token $GITHUB_TOKEN" \
 ```
 
 **Key fields in response:**
+
 - `status`: "queued", "in_progress", "completed"
 - `conclusion`: "success", "failure", "cancelled", "skipped" (only when status is "completed")
 - `name`: Workflow name (e.g., "Linters", "CI - Build and Test")
@@ -304,6 +311,7 @@ curl -s -H "Authorization: token $GITHUB_TOKEN" \
 ```
 
 **Key fields for merge readiness:**
+
 - `mergeable`: true/false (can the PR be merged)
 - `mergeable_state`: "clean", "unstable", "dirty", "blocked"
 - `state`: "open", "closed"
@@ -343,7 +351,7 @@ curl -s -H "Authorization: token $GITHUB_TOKEN" \
 ### Common Workflow States
 
 | Status | Conclusion | Meaning |
-|--------|-----------|---------|
+| ------ | ---------- | ------- |
 | `queued` | - | Workflow is waiting to start |
 | `in_progress` | - | Workflow is currently running |
 | `completed` | `success` | ✅ All jobs passed |
@@ -354,15 +362,18 @@ curl -s -H "Authorization: token $GITHUB_TOKEN" \
 ### Troubleshooting
 
 **401 Unauthorized:**
+
 - Token is missing or expired
 - Check: `echo $GITHUB_TOKEN`
 
 **403 Forbidden:**
+
 - Token lacks required permissions
 - Need `repo` scope for private repos
 - Need `actions:read` for workflow access
 
 **404 Not Found:**
+
 - Repository, branch, or run doesn't exist
 - Check branch name and repository path
 
@@ -374,9 +385,11 @@ curl -s -H "Authorization: token $GITHUB_TOKEN" \
 - Update docs/privacy.html when privacy policy changes
 - **Always keep documentation in sync with code**
 
-## SwiftLint Execution
+## Linters
 
-### Local execution
+### SwiftLint (Swift Code Quality)
+
+**Local execution:**
 
 ```bash
 # Check all files
@@ -389,9 +402,35 @@ swiftlint --fix
 swiftlint lint --path Repeto/Services/
 ```
 
+### Markdownlint (Markdown Files)
+
+**Local execution:**
+
+```bash
+# Check all Markdown files
+npx markdownlint-cli2 "**/*.md"
+
+# Auto-fix where possible
+npx markdownlint-cli2 --fix "**/*.md"
+```
+
+**Configuration:** `.markdownlint.json`
+
+### Actionlint (GitHub Actions Workflows)
+
+**Local execution:**
+
+```bash
+# Install (if not already installed)
+brew install actionlint
+
+# Check all workflow files
+actionlint
+```
+
 ### CI/CD
 
-- Automatically runs on all PRs via GitHub Actions
+- All linters automatically run on all PRs via GitHub Actions (`.github/workflows/linters.yml`)
 - Must pass before merge
 
 ## Testing
