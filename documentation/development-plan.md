@@ -81,6 +81,7 @@ Repeto（リピート）
 - [x] GitHub Actions CI/CD構築
   - ビルド自動化
   - TestFlight自動配信
+  - SwiftLintによるコード品質チェック
   - 実機で触れる成果物の継続的提供
 
 #### 成果物
