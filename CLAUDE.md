@@ -244,6 +244,128 @@ update files
 3. **Update development status in README.md**
 4. Create release notes (if applicable)
 
+## Checking CI Status (Claude Code on Web)
+
+When working in Claude Code on the web, the GitHub CLI (`gh`) may not be available. Use the GitHub REST API with `curl` to check CI status.
+
+### Prerequisites
+
+Ensure `GITHUB_TOKEN` is set in the environment:
+
+```bash
+env | grep GITHUB_TOKEN
+```
+
+### Check Workflow Runs for a Branch
+
+```bash
+# List recent workflow runs for a specific branch
+curl -s -H "Authorization: token $GITHUB_TOKEN" \
+  -H "Accept: application/vnd.github.v3+json" \
+  "https://api.github.com/repos/{owner}/{repo}/actions/runs?branch={branch-name}&per_page=5"
+
+# Example for this repo
+curl -s -H "Authorization: token $GITHUB_TOKEN" \
+  -H "Accept: application/vnd.github.v3+json" \
+  "https://api.github.com/repos/kkohtaka/Repeto/actions/runs?branch=main&per_page=5"
+```
+
+**Key fields in response:**
+- `status`: "queued", "in_progress", "completed"
+- `conclusion`: "success", "failure", "cancelled", "skipped" (only when status is "completed")
+- `name`: Workflow name (e.g., "Linters", "CI - Build and Test")
+- `html_url`: Link to workflow run on GitHub
+
+### Check Specific Workflow Run
+
+```bash
+# Get details of a specific workflow run by ID
+curl -s -H "Authorization: token $GITHUB_TOKEN" \
+  -H "Accept: application/vnd.github.v3+json" \
+  "https://api.github.com/repos/{owner}/{repo}/actions/runs/{run_id}"
+```
+
+### Check All Workflows for a Commit
+
+```bash
+# Check combined status for a specific commit
+curl -s -H "Authorization: token $GITHUB_TOKEN" \
+  -H "Accept: application/vnd.github.v3+json" \
+  "https://api.github.com/repos/{owner}/{repo}/commits/{commit_sha}/status"
+```
+
+### Check PR Status
+
+```bash
+# Get PR details including CI status
+curl -s -H "Authorization: token $GITHUB_TOKEN" \
+  -H "Accept: application/vnd.github.v3+json" \
+  "https://api.github.com/repos/{owner}/{repo}/pulls/{pr_number}"
+```
+
+**Key fields for merge readiness:**
+- `mergeable`: true/false (can the PR be merged)
+- `mergeable_state`: "clean", "unstable", "dirty", "blocked"
+- `state`: "open", "closed"
+
+### Practical Examples
+
+**Wait for CI to complete:**
+
+```bash
+# Check every 30 seconds until workflow completes
+while true; do
+  STATUS=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+    -H "Accept: application/vnd.github.v3+json" \
+    "https://api.github.com/repos/kkohtaka/Repeto/actions/runs/{run_id}" \
+    | grep -o '"status":"[^"]*"' | cut -d'"' -f4)
+
+  if [ "$STATUS" = "completed" ]; then
+    echo "Workflow completed!"
+    break
+  fi
+  echo "Status: $STATUS - waiting..."
+  sleep 30
+done
+```
+
+**Check if all workflows passed:**
+
+```bash
+# List latest runs and check conclusions
+curl -s -H "Authorization: token $GITHUB_TOKEN" \
+  -H "Accept: application/vnd.github.v3+json" \
+  "https://api.github.com/repos/kkohtaka/Repeto/actions/runs?branch=main&per_page=5" \
+  | python3 -c "import sys, json; runs = json.load(sys.stdin)['workflow_runs']; \
+    [print(f\"{r['name']}: {r['status']} ({r.get('conclusion', 'running')})\") for r in runs]"
+```
+
+### Common Workflow States
+
+| Status | Conclusion | Meaning |
+|--------|-----------|---------|
+| `queued` | - | Workflow is waiting to start |
+| `in_progress` | - | Workflow is currently running |
+| `completed` | `success` | ✅ All jobs passed |
+| `completed` | `failure` | ❌ At least one job failed |
+| `completed` | `cancelled` | ⚠️ Workflow was cancelled |
+| `completed` | `skipped` | ⏭️ Workflow was skipped |
+
+### Troubleshooting
+
+**401 Unauthorized:**
+- Token is missing or expired
+- Check: `echo $GITHUB_TOKEN`
+
+**403 Forbidden:**
+- Token lacks required permissions
+- Need `repo` scope for private repos
+- Need `actions:read` for workflow access
+
+**404 Not Found:**
+- Repository, branch, or run doesn't exist
+- Check branch name and repository path
+
 ## Important Notes
 
 - Be cautious with Core Data model changes (migration required)
