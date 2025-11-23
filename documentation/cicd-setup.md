@@ -12,7 +12,7 @@
 TestFlight自動配信に必要な秘密情報をGitHub Secretsに登録してください。
 
 | Secret名 | 説明 | 備考 |
-|---------|------|------|
+| ------- | ---- | ---- |
 | `APPLE_CERTIFICATE_BASE64` | Distribution証明書（.p12形式、Base64エンコード） | 年1回更新が必要 |
 | `APPLE_CERTIFICATE_PASSWORD` | 証明書のパスワード | - |
 | `APPLE_PROVISION_PROFILE_BASE64` | App Store Distribution Profile（Base64エンコード） | 証明書更新時に再作成が必要 |

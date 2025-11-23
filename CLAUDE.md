@@ -3,28 +3,33 @@
 ## Pre-Commit Checklist
 
 ### 1. Code Quality Checks
+
 - [ ] Verify SwiftLint shows zero errors
 - [ ] Confirm build succeeds (Simulator)
 - [ ] Verify all existing tests pass
 
 ### 2. New Code Requirements
+
 - [ ] Add unit tests for new logic
 - [ ] Add documentation comments for public APIs
 - [ ] Consider migration strategy for Core Data model changes
 
 ### 3. Documentation Updates
+
 - [ ] **Update development status in README.md**
 - [ ] **Update task checklist in `documentation/development-plan.md`**
 - [ ] Update design.md for significant design changes
 - [ ] Update cicd-setup.md for CI/CD configuration changes
 
 ### 4. Pre-Commit/Push
+
 - [ ] Run SwiftLint: `swiftlint`
 - [ ] Run tests: `xcodebuild test -scheme Repeto -destination 'platform=iOS Simulator,name=Any iOS Simulator Device'`
 - [ ] Update CLAUDE.md if needed (for significant changes)
 - [ ] **Write commit message in Conventional Commits format (English)**
 
 ### 5. Pull Request Creation
+
 - [ ] Provide clear summary of changes
 - [ ] Add screenshots for UI changes
 - [ ] Reference related issues
@@ -32,13 +37,15 @@
 ## Coding Standards
 
 ### Swift
+
 - Indentation: 4 spaces
 - Naming: lowerCamelCase (variables/functions), UpperCamelCase (types)
 - Access control: Principle of least privilege (private > fileprivate > internal > public)
 - Keep SwiftUI views small (aim for under 50 lines)
 
 ### Project Structure
-```
+
+```text
 Repeto/
 ├── App/           # Application entry point
 ├── Models/        # Data models & Core Data
@@ -49,6 +56,7 @@ Repeto/
 ```
 
 ### Testing
+
 - Unit tests: `RepetoTests/`
 - UI tests: `RepetoUITests/`
 - Coverage target: 70%+
@@ -56,7 +64,8 @@ Repeto/
 ## Commit Message Guidelines
 
 ### Format
-```
+
+```text
 <type>(<scope>): <subject>
 
 <body>
@@ -65,6 +74,7 @@ Repeto/
 ```
 
 ### Type
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation only changes
@@ -75,6 +85,7 @@ Repeto/
 - `ci`: CI/CD configuration changes
 
 ### Scope (Optional)
+
 - `core-data`: Core Data related
 - `ui`: UI/View related
 - `service`: Service layer
@@ -103,7 +114,7 @@ Repeto/
 
 ### Good Examples
 
-```
+```text
 feat(service): Implement interval calculation logic
 
 Add logic to calculate next reminder date based on task interval:
@@ -117,7 +128,7 @@ task completion flow in Phase 2.
 Related to #20
 ```
 
-```
+```text
 fix(core-data): Fix iCloud sync conflict resolution
 
 Update merge policy to properly handle conflicts when multiple
@@ -129,7 +140,7 @@ in-memory changes.
 Fixes #15
 ```
 
-```
+```text
 docs(dev-plan): Update Phase 1 completion status
 
 Mark all Phase 1 tasks as completed:
@@ -142,12 +153,15 @@ Updated README.md to reflect current development status.
 ```
 
 ### Bad Example
-```
+
+```text
 update files
 ```
+
 (Unclear what changed, cannot be used as PR description)
 
 ### GitHub PR Creation
+
 - When using Squash & Merge, commit messages become PR title and description
 - For multiple commits, use the most important change as title and summarize each commit in body
 
@@ -156,6 +170,7 @@ update files
 ### Documents to Update
 
 #### Always update when tasks are completed
+
 1. **`documentation/development-plan.md`**
    - Change task status from `[ ]` to `[x]`
    - Add new tasks if discovered
@@ -165,12 +180,13 @@ update files
    - Note when phases are completed
 
 #### Update when design changes
-3. **`documentation/design.md`**
+
+1. **`documentation/design.md`**
    - Data model changes
    - Architecture changes
    - UI/UX design changes
 
-4. **`documentation/cicd-setup.md`**
+2. **`documentation/cicd-setup.md`**
    - GitHub Actions configuration changes
    - New secrets added
    - Build/deployment procedure changes
@@ -178,6 +194,7 @@ update files
 ### Documentation Update Examples
 
 **When completing tasks:**
+
 ```diff
 # development-plan.md
 ### Phase 2: Core Feature Implementation
@@ -202,6 +219,7 @@ update files
 ## Common Workflows
 
 ### Adding New Features
+
 1. Create/verify issue
 2. Create branch: `claude/feature-name-{session-id}`
 3. Implementation (including tests)
@@ -211,6 +229,7 @@ update files
 7. Create PR
 
 ### Bug Fixes
+
 1. Reproduce the issue
 2. Add test case (verify reproduction)
 3. Implement fix
@@ -219,12 +238,14 @@ update files
 6. Commit & push
 
 ### Milestone Completion
+
 1. Verify all tasks are completed
 2. **Update Phase status in development-plan.md**
 3. **Update development status in README.md**
 4. Create release notes (if applicable)
 
 ## Important Notes
+
 - Be cautious with Core Data model changes (migration required)
 - Consider iCloud sync in implementation (offline support)
 - Note the 64 notification limit
@@ -234,6 +255,7 @@ update files
 ## SwiftLint Execution
 
 ### Local execution
+
 ```bash
 # Check all files
 swiftlint
@@ -246,17 +268,20 @@ swiftlint lint --path Repeto/Services/
 ```
 
 ### CI/CD
+
 - Automatically runs on all PRs via GitHub Actions
 - Must pass before merge
 
 ## Testing
 
 ### Check available simulators
+
 ```bash
 xcrun simctl list devices available iOS
 ```
 
 ### Run all tests
+
 ```bash
 # Using any available iOS simulator
 xcodebuild test \
@@ -273,6 +298,7 @@ xcodebuild test \
 ```
 
 ### Run specific test
+
 ```bash
 xcodebuild test \
   -project Repeto.xcodeproj \
@@ -282,5 +308,6 @@ xcodebuild test \
 ```
 
 ### Test coverage
+
 - Target: 70%+
 - Measured automatically in CI/CD (Phase 5)
