@@ -491,3 +491,23 @@ xcodebuild test \
 
 - Target: 70%+
 - Measured automatically in CI/CD (Phase 5)
+
+## Dependency Management (Renovate)
+
+Renovate Bot automatically manages dependency updates:
+
+- **GitHub Actions** (actions/checkout, etc.) → PR labeled `github-actions`, commit prefix `chore(ci):`
+- **Development tools** (.github/tool-versions.env) → PR labeled `tools`, commit prefix `chore(tools):`
+
+**Setup:** See `documentation/cicd-setup.md` for configuration details
+
+### Reviewing Renovate PRs
+
+1. Check PR description for changes
+2. Verify CI passes (linters and tests)
+3. Review changelog for breaking changes
+4. Merge if everything looks good
+
+### Common Issues
+
+**No PRs created:** Check workflow logs and verify `RENOVATE_TOKEN` is set correctly

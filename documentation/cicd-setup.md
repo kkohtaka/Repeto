@@ -47,6 +47,41 @@ TestFlight自動配信に必要な秘密情報をGitHub Secretsに登録して�
 
 ---
 
+## 依存関係の自動更新（Renovate）
+
+Renovate Botが以下の依存関係を自動的に管理します：
+
+- **GitHub Actions**: actions/checkout, actions/cache, actions/setup-node, actions/upload-artifact
+- **開発ツール**: `.github/tool-versions.env`内のツールバージョン
+  - actionlint, markdownlint-cli2, SwiftLint, gh, Node.js, shellcheck
+
+### 必要な設定
+
+**Secret名**: `RENOVATE_TOKEN`
+**説明**: GitHub Personal Access Token (Fine-grained)
+**必要な権限**:
+
+- Contents: Read/Write
+- Pull requests: Read/Write
+- Metadata: Read-only
+
+### 実行スケジュール
+
+- **自動実行**: 毎週月曜日 9:00 AM JST
+- **設定ファイル**: `.github/renovate.json5`
+- **ワークフロー**: `.github/workflows/renovate.yml`
+
+### 動作
+
+Renovateは関連する更新を自動的にグループ化してPRを作成します：
+
+1. **GitHub Actions更新**: `chore(ci): Update GitHub Actions` ラベル: `dependencies`, `github-actions`
+2. **開発ツール更新**: `chore(tools): Update Development Tools` ラベル: `dependencies`, `tools`
+
+詳細は`CLAUDE.md`の「Dependency Management (Renovate)」セクションを参照してください。
+
+---
+
 ## TestFlight配信
 
 ### タグプッシュによる自動配信（推奨）
