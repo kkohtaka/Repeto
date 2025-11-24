@@ -102,3 +102,47 @@ git push origin v1.0.0
 
 - **ビルド番号**: GitHub Actionsの実行番号で自動インクリメント（手動指定も可能）
 - **バージョン番号**: Xcodeで手動更新（TARGETS → Repeto → General → Version）
+
+---
+
+## TestFlightテスター招待とダウンロード手順
+
+### 開発者側: テスターの招待
+
+1. [App Store Connect](https://appstoreconnect.apple.com/)にログイン
+2. **マイApp** → **Repeto**を選択
+3. **TestFlight**タブをクリック
+4. **内部テスト**または**外部テスト**でテストグループを作成
+   - **内部テスト**: App Store Connectユーザー（最大100名）
+   - **外部テスト**: 任意のメールアドレス（最大10,000名、Appleレビュー必要）
+5. **テスター**セクションで招待したいテスターのメールアドレスを追加
+6. テスターに招待メールが自動送信される
+
+### テスター側: アプリのダウンロード
+
+#### ステップ1: TestFlightアプリのインストール
+
+- App Storeから**TestFlight**アプリをインストール（無料）
+- リンク: [TestFlight - App Store](https://apps.apple.com/jp/app/testflight/id899247664)
+
+#### ステップ2: 招待の受け入れ
+
+1. 開発者から届いた招待メールを開く
+2. **View in TestFlight**または**TestFlightで表示**をタップ
+3. TestFlightアプリが開き、招待を受け入れるか確認される
+4. **同意する**をタップ
+
+#### ステップ3: アプリのインストール
+
+1. TestFlightアプリ内で**Repeto**が表示される
+2. **インストール**ボタンをタップ
+3. ダウンロード＆インストールが完了したら**開く**をタップして起動
+
+### アップデート時の手順
+
+新しいビルドがTestFlightに配信されると:
+
+1. TestFlightアプリに通知が届く
+2. TestFlightアプリを開く
+3. Repetoアプリの横に**アップデート**ボタンが表示される
+4. **アップデート**をタップしてインストール
