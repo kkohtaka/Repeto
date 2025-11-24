@@ -17,8 +17,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Load tool versions
+        id: versions
+        run: |
+          source .github/tool-versions.env
+          echo "swiftlint_version=${SWIFTLINT_VERSION}" >> "$GITHUB_OUTPUT"
+
       - name: Install SwiftLint
-        run: brew install swiftlint
+        run: |
+          VERSION="${{ steps.versions.outputs.swiftlint_version }}"
+          curl -sL "https://github.com/realm/SwiftLint/releases/download/${VERSION}/portable_swiftlint.zip" -o swiftlint.zip
+          unzip swiftlint.zip
+          sudo mv swiftlint /usr/local/bin/
+          swiftlint version
 
       - name: Run SwiftLint
         run: swiftlint lint --strict
@@ -31,10 +42,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run markdownlint
-        uses: DavidAnson/markdownlint-cli2-action@v18
+      - name: Load tool versions
+        id: versions
+        run: |
+          source .github/tool-versions.env
+          echo "markdownlint_version=${MARKDOWNLINT_CLI2_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          globs: '**/*.md'
+          node-version: '20'
+
+      - name: Install markdownlint-cli2
+        run: npm install -g markdownlint-cli2@${{ steps.versions.outputs.markdownlint_version }}
+
+      - name: Run markdownlint
+        run: markdownlint-cli2 "**/*.md"
 
   actionlint:
     name: GitHub Actions Lint
@@ -44,7 +67,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Load tool versions
+        id: versions
+        run: |
+          source .github/tool-versions.env
+          echo "actionlint_version=${ACTIONLINT_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Install actionlint
+        run: |
+          VERSION="${{ steps.versions.outputs.actionlint_version }}"
+          curl -sL "https://github.com/rhysd/actionlint/releases/download/v${VERSION}/actionlint_${VERSION}_linux_amd64.tar.gz" | tar xz
+          sudo mv ./actionlint /usr/local/bin/actionlint
+          actionlint -version
+
       - name: Run actionlint
-        uses: reviewdog/action-actionlint@v1
-        with:
-          fail_level: error
+        run: actionlint

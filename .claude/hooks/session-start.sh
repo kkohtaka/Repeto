@@ -9,6 +9,18 @@ fi
 
 echo "🚀 Setting up development environment for Repeto..."
 
+# Load tool versions from configuration file
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+VERSIONS_FILE="$SCRIPT_DIR/../../.github/tool-versions.env"
+
+if [ -f "$VERSIONS_FILE" ]; then
+  # shellcheck source=../../.github/tool-versions.env
+  source "$VERSIONS_FILE"
+  echo "📌 Using pinned tool versions from .github/tool-versions.env"
+else
+  echo "⚠️  Version file not found at $VERSIONS_FILE, using latest versions"
+fi
+
 # Create bin directory for user-installed tools
 mkdir -p ~/bin
 
@@ -23,11 +35,11 @@ fi
 # Install actionlint (GitHub Actions linter)
 if ! command -v actionlint &> /dev/null; then
   echo "📦 Installing actionlint..."
-  ACTIONLINT_VERSION=$(curl -s https://api.github.com/repos/rhysd/actionlint/releases/latest | grep '"tag_name"' | cut -d'"' -f4 | sed 's/^v//')
-  if [ -n "$ACTIONLINT_VERSION" ]; then
-    curl -sL "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz" \
+  VERSION="${ACTIONLINT_VERSION:-$(curl -s https://api.github.com/repos/rhysd/actionlint/releases/latest | grep '"tag_name"' | cut -d'"' -f4 | sed 's/^v//')}"
+  if [ -n "$VERSION" ]; then
+    curl -sL "https://github.com/rhysd/actionlint/releases/download/v${VERSION}/actionlint_${VERSION}_linux_amd64.tar.gz" \
       | tar xz -C ~/bin actionlint
-    echo "✅ actionlint v${ACTIONLINT_VERSION} installed"
+    echo "✅ actionlint v${VERSION} installed"
   else
     echo "⚠️  Failed to get actionlint version"
   fi
@@ -38,14 +50,14 @@ fi
 # Install gh (GitHub CLI)
 if ! command -v gh &> /dev/null; then
   echo "📦 Installing gh (GitHub CLI)..."
-  GH_VERSION=$(curl -s https://api.github.com/repos/cli/cli/releases/latest | grep '"tag_name"' | cut -d'"' -f4 | sed 's/^v//')
-  if [ -n "$GH_VERSION" ]; then
+  VERSION="${GH_VERSION:-$(curl -s https://api.github.com/repos/cli/cli/releases/latest | grep '"tag_name"' | cut -d'"' -f4 | sed 's/^v//')}"
+  if [ -n "$VERSION" ]; then
     cd /tmp
-    curl -sL "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_amd64.tar.gz" \
+    curl -sL "https://github.com/cli/cli/releases/download/v${VERSION}/gh_${VERSION}_linux_amd64.tar.gz" \
       | tar xz
-    mv "gh_${GH_VERSION}_linux_amd64/bin/gh" ~/bin/
-    rm -rf "gh_${GH_VERSION}_linux_amd64"
-    echo "✅ gh v${GH_VERSION} installed"
+    mv "gh_${VERSION}_linux_amd64/bin/gh" ~/bin/
+    rm -rf "gh_${VERSION}_linux_amd64"
+    echo "✅ gh v${VERSION} installed"
   else
     echo "⚠️  Failed to get gh version"
   fi
