@@ -32,6 +32,23 @@ if [ -n "${CLAUDE_ENV_FILE:-}" ]; then
   echo 'export PATH="$HOME/bin:$PATH"' >> "$CLAUDE_ENV_FILE"
 fi
 
+# Install shellcheck (Shell script linter, required by actionlint)
+if ! command -v shellcheck &> /dev/null; then
+  echo "📦 Installing shellcheck..."
+  VERSION="${SHELLCHECK_VERSION:-$(curl -s https://api.github.com/repos/koalaman/shellcheck/releases/latest | grep '"tag_name"' | cut -d'"' -f4 | sed 's/^v//')}"
+  if [ -n "$VERSION" ]; then
+    curl -sL "https://github.com/koalaman/shellcheck/releases/download/v${VERSION}/shellcheck-v${VERSION}.linux.x86_64.tar.xz" \
+      | tar xJ -C /tmp
+    mv "/tmp/shellcheck-v${VERSION}/shellcheck" ~/bin/
+    rm -rf "/tmp/shellcheck-v${VERSION}"
+    echo "✅ shellcheck v${VERSION} installed"
+  else
+    echo "⚠️  Failed to get shellcheck version"
+  fi
+else
+  echo "✅ shellcheck already installed ($(shellcheck --version | grep '^version:' | awk '{print $2}'))"
+fi
+
 # Install actionlint (GitHub Actions linter)
 if ! command -v actionlint &> /dev/null; then
   echo "📦 Installing actionlint..."
@@ -82,6 +99,7 @@ fi
 
 echo ""
 echo "📋 Installed development tools:"
+echo "  - shellcheck: $(shellcheck --version 2>&1 | grep '^version:' | awk '{print $2}' || echo 'not found')"
 echo "  - actionlint: $(actionlint -version 2>&1 | head -n1 || echo 'not found')"
 echo "  - gh: $(gh --version 2>&1 | head -n1 || echo 'not found')"
 echo "  - Node.js: $(node --version 2>&1 || echo 'not found')"

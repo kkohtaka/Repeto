@@ -393,6 +393,7 @@ development tools.
 
 ### Installed Tools
 
+- **shellcheck** - Shell script linter (required by actionlint)
 - **actionlint** - GitHub Actions linter
 - **gh** - GitHub CLI
 - **npx** - For markdownlint (verification only)
