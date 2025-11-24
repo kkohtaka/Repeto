@@ -251,8 +251,9 @@ update files
 
 ## Checking CI Status (Claude Code on Web)
 
-When working in Claude Code on the web, the GitHub CLI (`gh`) may not be available.
-Use the GitHub REST API with `curl` to check CI status.
+When working in Claude Code on the web, the GitHub CLI (`gh`) is automatically installed
+via the SessionStart hook. You can use `gh` commands or the GitHub REST API with `curl`
+to check CI status.
 
 ### Prerequisites
 
@@ -384,6 +385,23 @@ curl -s -H "Authorization: token $GITHUB_TOKEN" \
 - Note the 64 notification limit
 - Update docs/privacy.html when privacy policy changes
 - **Always keep documentation in sync with code**
+
+## SessionStart Hook (Claude Code on Web)
+
+When working in Claude Code on the web, the SessionStart hook automatically sets up
+development tools.
+
+### Installed Tools
+
+- **actionlint** - GitHub Actions linter
+- **gh** - GitHub CLI
+- **npx** - For markdownlint (verification only)
+
+**Note**: SwiftLint/Xcode are not available in Linux environment (run in CI)
+
+### Customization
+
+Edit `.claude/hooks/session-start.sh` when you need to add new tools.
 
 ## Linters
 
