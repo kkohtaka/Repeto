@@ -1,7 +1,4 @@
 {
-  "allowedTools": [
-    "Bash(gh *)"
-  ],
   "hooks": {
     "SessionStart": [
       {
