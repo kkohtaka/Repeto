@@ -1,4 +1,4 @@
-name: CI - Build and Test
+name: Build and Test
 
 on:
   push:
@@ -55,7 +55,6 @@ jobs:
   archive-test:
     name: Test Archive and IPA Build
     runs-on: macos-26
-    if: github.event_name == 'pull_request'
 
     steps:
       - name: Checkout code
@@ -156,13 +155,6 @@ jobs:
 
           echo "✅ IPA exported successfully"
 
-      - name: Upload IPA artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Repeto-PR-${{ github.event.pull_request.number }}.ipa
-          path: ${{ runner.temp }}/export/Repeto.ipa
-          retention-days: 7
-
       - name: Clean up keychain
         if: always()
         run: |
@@ -175,5 +167,5 @@ jobs:
         if: success()
         run: |
           echo "✅ Archive and IPA build test passed!"
-          echo "This PR is ready for TestFlight deployment after merge."
+          echo "The workflow successfully built and exported an IPA file."
 
