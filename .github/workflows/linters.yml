@@ -28,7 +28,7 @@ jobs:
         run: |
           VERSION="${{ steps.versions.outputs.swiftlint_version }}"
           curl -sL "https://github.com/realm/SwiftLint/releases/download/${VERSION}/portable_swiftlint.zip" -o swiftlint.zip
-          unzip swiftlint.zip
+          unzip -o swiftlint.zip
           sudo mv swiftlint /usr/local/bin/
           swiftlint version
 
