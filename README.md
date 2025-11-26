@@ -57,7 +57,6 @@ Repetoは、掃除や買い物などの定期的に繰り返すタスクを管�
 
 このプロジェクトはMITライセンスの下でライセンスされています。詳細は[LICENSE](LICENSE)ファイルを参照してください。
 
-## コントリビューション
+## お問い合わせ
 
 バグ報告や機能リクエストは[GitHub Issues](https://github.com/kkohtaka/Repeto/issues)で受け付けています。
-プルリクエストも歓迎します。
