@@ -78,46 +78,19 @@ Repeto/
 <footer>
 ```
 
-### Type
+### Types and Scopes
 
-- `feat`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation only changes
-- `style`: Code formatting (no logic change)
-- `refactor`: Code refactoring
-- `test`: Adding or updating tests
-- `chore`: Maintenance tasks (dependency updates, etc.)
-- `ci`: CI/CD configuration changes
+**Types:** `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `ci`
 
-### Scope (Optional)
-
-- `core-data`: Core Data related
-- `ui`: UI/View related
-- `service`: Service layer
-- `viewmodel`: ViewModel layer
-- `workflow`: GitHub Actions
-- `docs`: Documentation
+**Scopes (optional):** `core-data`, `ui`, `service`, `viewmodel`, `workflow`, `docs`
 
 ### Writing Rules
 
-1. **Subject (First line)**
-   - Maximum 50 characters
-   - English, imperative mood ("Add" not "Added" or "Adds")
-   - No period at the end
-   - Example: `feat(service): Add TaskService for CRUD operations`
+1. **Subject**: Max 50 chars, imperative mood, no period
+2. **Body**: Wrap at 72 chars, explain **why** not what, use bullet points
+3. **Footer**: Note breaking changes, reference issues (`Closes #123`)
 
-2. **Body (Message body)**
-   - Leave one blank line after subject
-   - Wrap at 72 characters
-   - Explain **why** rather than **what**
-   - Use bullet points (`-` or `*`) if needed
-   - Write detailed description suitable for PR description
-
-3. **Footer**
-   - Note breaking changes if any
-   - Reference issues: `Closes #123` or `Related to #123`
-
-### Good Examples
+### Example
 
 ```text
 feat(service): Implement interval calculation logic
@@ -127,99 +100,24 @@ Add logic to calculate next reminder date based on task interval:
 - Handle edge cases (month-end dates, leap years)
 - Unit tests with 95% coverage
 
-This completes the core calculation engine required for
-task completion flow in Phase 2.
-
 Related to #20
 ```
 
-```text
-fix(core-data): Fix iCloud sync conflict resolution
-
-Update merge policy to properly handle conflicts when multiple
-devices modify the same task simultaneously. Changed from
-NSMergeByPropertyStoreTrumpMergePolicy to
-NSMergeByPropertyObjectTrumpMergePolicy to prioritize
-in-memory changes.
-
-Fixes #15
-```
-
-```text
-docs(dev-plan): Update Phase 1 completion status
-
-Mark all Phase 1 tasks as completed:
-- CI/CD pipeline setup
-- Core Data schema implementation
-- iCloud sync configuration
-- Privacy policy publication
-
-Updated README.md to reflect current development status.
-```
-
-### Bad Example
-
-```text
-update files
-```
-
-(Unclear what changed, cannot be used as PR description)
-
-### GitHub PR Creation
-
-- When using Squash & Merge, commit messages become PR title and description
-- For multiple commits, use the most important change as title and summarize each commit in body
+**Note:** When using Squash & Merge, commit messages become PR title and description.
 
 ## Documentation Management
 
 ### Documents to Update
 
-#### Always update when tasks are completed
+**Always update when tasks are completed:**
 
-1. **`documentation/development-plan.md`**
-   - Change task status from `[ ]` to `[x]`
-   - Add new tasks if discovered
+1. **`documentation/development-plan.md`** - Change task status from `[ ]` to `[x]`
+2. **`README.md`** - Update "Development Status" section
 
-2. **`README.md`**
-   - Update "Development Status" section
-   - Note when phases are completed
+**Update when design changes:**
 
-#### Update when design changes
-
-1. **`documentation/design.md`**
-   - Data model changes
-   - Architecture changes
-   - UI/UX design changes
-
-2. **`documentation/cicd-setup.md`**
-   - GitHub Actions configuration changes
-   - New secrets added
-   - Build/deployment procedure changes
-
-### Documentation Update Examples
-
-**When completing tasks:**
-
-```diff
-# development-plan.md
-### Phase 2: Core Feature Implementation
-- [ ] TaskService implementation (CRUD operations)
-+ - [x] TaskService implementation (CRUD operations)
-- [ ] Interval calculation logic
-+ - [x] Interval calculation logic
-```
-
-```diff
-# README.md
-## Development Status
-
-- Currently preparing iOS development.
-+ ### Phase 1: Project Foundation ✅ Completed
-+ ### Phase 2: Core Feature Implementation (In Progress)
-+ - [x] TaskService implementation
-+ - [x] Interval calculation logic
-+ - [ ] Task completion handling
-```
+1. **`documentation/design.md`** - Data model, architecture, UI/UX changes
+2. **`documentation/cicd-setup.md`** - GitHub Actions, secrets, build/deployment changes
 
 ## Common Workflows
 
@@ -242,141 +140,108 @@ update files
 5. **Update documentation if needed**
 6. Commit & push
 
-### Milestone Completion
+## GitHub Operations (Claude Code on Web)
 
-1. Verify all tasks are completed
-2. **Update Phase status in development-plan.md**
-3. **Update development status in README.md**
-4. Create release notes (if applicable)
+### Creating Pull Requests
 
-## Checking CI Status (Claude Code on Web)
-
-When working in Claude Code on the web, the GitHub CLI (`gh`) is automatically installed
-via the SessionStart hook. You can use `gh` commands or the GitHub REST API with `curl`
-to check CI status.
-
-### Prerequisites
-
-Ensure `GITHUB_TOKEN` is set in the environment:
+**IMPORTANT**: Always use `curl` with GitHub REST API instead of `gh pr create`, as `gh` commands
+may be restricted.
 
 ```bash
-env | grep GITHUB_TOKEN
+curl -s -X POST \
+  -H "Authorization: token $GITHUB_TOKEN" \
+  -H "Accept: application/vnd.github.v3+json" \
+  "https://api.github.com/repos/kkohtaka/Repeto/pulls" \
+  -d @- <<'EOF'
+{
+  "title": "feat(service): Add new feature",
+  "head": "feature-branch-name",
+  "base": "main",
+  "body": "## Summary\n\nDetailed description...\n\n## Changes\n\n- Change 1\n- Change 2"
+}
+EOF
+```
+
+**Key fields:** `title` (required), `head` (required), `base` (required), `body` (optional)
+
+### Managing Pull Requests
+
+```bash
+# Merge PR using squash method
+curl -s -X PUT \
+  -H "Authorization: token $GITHUB_TOKEN" \
+  -H "Accept: application/vnd.github.v3+json" \
+  "https://api.github.com/repos/kkohtaka/Repeto/pulls/{PR_NUMBER}/merge" \
+  -d '{"merge_method":"squash"}'
+
+# Close PR without merging
+curl -s -X PATCH \
+  -H "Authorization: token $GITHUB_TOKEN" \
+  -H "Accept: application/vnd.github.v3+json" \
+  "https://api.github.com/repos/kkohtaka/Repeto/pulls/{PR_NUMBER}" \
+  -d '{"state":"closed"}'
 ```
 
 ### Check Workflow Runs for a Branch
 
-```bash
-# List recent workflow runs for a specific branch
-curl -s -H "Authorization: token $GITHUB_TOKEN" \
-  -H "Accept: application/vnd.github.v3+json" \
-  "https://api.github.com/repos/{owner}/{repo}/actions/runs?branch={branch-name}&per_page=5"
+**IMPORTANT**: Due to environment variable expansion issues in Bash tool, use Python scripts
+with subprocess to call curl for reliable GitHub API access.
 
-# Example for this repo
-curl -s -H "Authorization: token $GITHUB_TOKEN" \
-  -H "Accept: application/vnd.github.v3+json" \
-  "https://api.github.com/repos/kkohtaka/Repeto/actions/runs?branch=main&per_page=5"
+```bash
+python3 << 'PYEOF'
+import os
+import subprocess
+import json
+
+token = os.environ.get('GITHUB_TOKEN', '')
+
+result = subprocess.run(
+    ['curl', '-s', '-H', f'Authorization: token {token}',
+     '-H', 'Accept: application/vnd.github.v3+json',
+     'https://api.github.com/repos/kkohtaka/Repeto/actions/runs?branch=main&per_page=5'],
+    capture_output=True,
+    text=True
+)
+
+data = json.loads(result.stdout)
+runs = data.get('workflow_runs', [])
+print(f"Found {len(runs)} workflow runs\n")
+for run in runs:
+    print(f"- {run['name']}: {run['status']} / {run.get('conclusion', 'running')}")
+    print(f"  URL: {run['html_url']}")
+PYEOF
 ```
 
-**Key fields in response:**
+**Response fields:**
 
 - `status`: "queued", "in_progress", "completed"
-- `conclusion`: "success", "failure", "cancelled", "skipped" (only when status is "completed")
-- `name`: Workflow name (e.g., "Linters", "CI - Build and Test")
+- `conclusion`: "success", "failure", "cancelled", "skipped"
 - `html_url`: Link to workflow run on GitHub
 
-### Check Specific Workflow Run
+**For detailed job analysis**, replace the API endpoint with:
 
-```bash
-# Get details of a specific workflow run by ID
-curl -s -H "Authorization: token $GITHUB_TOKEN" \
-  -H "Accept: application/vnd.github.v3+json" \
-  "https://api.github.com/repos/{owner}/{repo}/actions/runs/{run_id}"
-```
+- `/actions/runs/{run_id}` - Specific workflow run
+- `/actions/runs/{run_id}/jobs` - Jobs and failed steps
+- `/pulls/{pr_number}` - PR status and mergeability
 
-### Check All Workflows for a Commit
+**Common errors:**
 
-```bash
-# Check combined status for a specific commit
-curl -s -H "Authorization: token $GITHUB_TOKEN" \
-  -H "Accept: application/vnd.github.v3+json" \
-  "https://api.github.com/repos/{owner}/{repo}/commits/{commit_sha}/status"
-```
+- `401 Unauthorized`: Token missing or expired
+- `403 Forbidden`: Token lacks required permissions
+- `404 Not Found`: Repository, branch, or run doesn't exist
 
-### Check PR Status
+## Git Operations
 
-```bash
-# Get PR details including CI status
-curl -s -H "Authorization: token $GITHUB_TOKEN" \
-  -H "Accept: application/vnd.github.v3+json" \
-  "https://api.github.com/repos/{owner}/{repo}/pulls/{pr_number}"
-```
+### Git Push
 
-**Key fields for merge readiness:**
+- Always use `git push -u origin <branch-name>`
+- Branch must start with 'claude/' and end with matching session id
+- Retry up to 4 times with exponential backoff (2s, 4s, 8s, 16s) on network errors
 
-- `mergeable`: true/false (can the PR be merged)
-- `mergeable_state`: "clean", "unstable", "dirty", "blocked"
-- `state`: "open", "closed"
+### Git Fetch/Pull
 
-### Practical Examples
-
-**Wait for CI to complete:**
-
-```bash
-# Check every 30 seconds until workflow completes
-while true; do
-  STATUS=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-    -H "Accept: application/vnd.github.v3+json" \
-    "https://api.github.com/repos/kkohtaka/Repeto/actions/runs/{run_id}" \
-    | grep -o '"status":"[^"]*"' | cut -d'"' -f4)
-
-  if [ "$STATUS" = "completed" ]; then
-    echo "Workflow completed!"
-    break
-  fi
-  echo "Status: $STATUS - waiting..."
-  sleep 30
-done
-```
-
-**Check if all workflows passed:**
-
-```bash
-# List latest runs and check conclusions
-curl -s -H "Authorization: token $GITHUB_TOKEN" \
-  -H "Accept: application/vnd.github.v3+json" \
-  "https://api.github.com/repos/kkohtaka/Repeto/actions/runs?branch=main&per_page=5" \
-  | python3 -c "import sys, json; runs = json.load(sys.stdin)['workflow_runs']; \
-    [print(f\"{r['name']}: {r['status']} ({r.get('conclusion', 'running')})\") for r in runs]"
-```
-
-### Common Workflow States
-
-| Status | Conclusion | Meaning |
-| ------ | ---------- | ------- |
-| `queued` | - | Workflow is waiting to start |
-| `in_progress` | - | Workflow is currently running |
-| `completed` | `success` | ✅ All jobs passed |
-| `completed` | `failure` | ❌ At least one job failed |
-| `completed` | `cancelled` | ⚠️ Workflow was cancelled |
-| `completed` | `skipped` | ⏭️ Workflow was skipped |
-
-### Troubleshooting
-
-**401 Unauthorized:**
-
-- Token is missing or expired
-- Check: `echo $GITHUB_TOKEN`
-
-**403 Forbidden:**
-
-- Token lacks required permissions
-- Need `repo` scope for private repos
-- Need `actions:read` for workflow access
-
-**404 Not Found:**
-
-- Repository, branch, or run doesn't exist
-- Check branch name and repository path
+- Prefer fetching specific branches: `git fetch origin <branch-name>`
+- Retry up to 4 times with exponential backoff on network failures
 
 ## Important Notes
 
@@ -389,97 +254,55 @@ curl -s -H "Authorization: token $GITHUB_TOKEN" \
 ## SessionStart Hook (Claude Code on Web)
 
 When working in Claude Code on the web, the SessionStart hook automatically sets up
-development tools.
-
-### Installed Tools
+development tools:
 
 - **shellcheck** - Shell script linter (required by actionlint)
 - **actionlint** - GitHub Actions linter
 - **gh** - GitHub CLI
-- **npx** - For markdownlint (verification only)
+- **npx** - For markdownlint
 
 **Note**: SwiftLint/Xcode are not available in Linux environment (run in CI)
 
-### Customization
-
-Edit `.claude/hooks/session-start.sh` when you need to add new tools.
-
 ## Linters
 
-### SwiftLint (Swift Code Quality)
-
-**Local execution:**
+### SwiftLint
 
 ```bash
-# Check all files
-swiftlint
-
-# Auto-fix where possible
-swiftlint --fix
-
-# Check specific files
-swiftlint lint --path Repeto/Services/
+swiftlint                           # Check all files
+swiftlint --fix                     # Auto-fix where possible
+swiftlint lint --path Repeto/Services/  # Check specific files
 ```
 
-### Markdownlint (Markdown Files)
-
-**Local execution:**
+### Markdownlint
 
 ```bash
-# Check all Markdown files
-npx markdownlint-cli2 "**/*.md"
-
-# Auto-fix where possible
-npx markdownlint-cli2 --fix "**/*.md"
+npx markdownlint-cli2 "**/*.md"     # Check all Markdown files
+npx markdownlint-cli2 --fix "**/*.md"  # Auto-fix where possible
 ```
 
 **Configuration:** `.markdownlint.json`
 
-### Actionlint (GitHub Actions Workflows)
-
-**Local execution:**
+### Actionlint
 
 ```bash
-# Install (if not already installed)
-brew install actionlint
-
-# Check all workflow files
-actionlint
+actionlint                          # Check all workflow files
 ```
 
-### CI/CD
-
-- All linters automatically run on all PRs via GitHub Actions (`.github/workflows/linters.yml`)
-- Must pass before merge
+**CI/CD:** All linters automatically run on PRs via `.github/workflows/linters.yml`
 
 ## Testing
 
-### Check available simulators
-
 ```bash
+# List available simulators
 xcrun simctl list devices available iOS
-```
 
-### Run all tests
-
-```bash
-# Using any available iOS simulator
+# Run all tests
 xcodebuild test \
   -project Repeto.xcodeproj \
   -scheme Repeto \
   -destination 'platform=iOS Simulator,name=iPhone 15'
 
-# Or use the first available simulator dynamically
-SIMULATOR=$(xcrun simctl list devices available iOS | grep -m 1 "iPhone" | grep -oE '[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}')
-xcodebuild test \
-  -project Repeto.xcodeproj \
-  -scheme Repeto \
-  -destination "platform=iOS Simulator,id=$SIMULATOR"
-```
-
-### Run specific test
-
-```bash
+# Run specific test
 xcodebuild test \
   -project Repeto.xcodeproj \
   -scheme Repeto \
@@ -487,16 +310,11 @@ xcodebuild test \
   -only-testing:RepetoTests/TaskServiceTests
 ```
 
-### Test coverage
-
-- Target: 70%+
-- Measured automatically in CI/CD (Phase 5)
-
 ## Dependency Management (Renovate)
 
 Renovate Bot automatically manages dependency updates:
 
-- **GitHub Actions** (actions/checkout, etc.) → PR labeled `github-actions`, commit prefix `chore(ci):`
+- **GitHub Actions** → PR labeled `github-actions`, commit prefix `chore(ci):`
 - **Development tools** (.github/tool-versions.env) → PR labeled `tools`, commit prefix `chore(tools):`
 
 **Setup:** See `documentation/cicd-setup.md` for configuration details
@@ -507,7 +325,3 @@ Renovate Bot automatically manages dependency updates:
 2. Verify CI passes (linters and tests)
 3. Review changelog for breaking changes
 4. Merge if everything looks good
-
-### Common Issues
-
-**No PRs created:** Check workflow logs and verify `RENOVATE_TOKEN` is set correctly
