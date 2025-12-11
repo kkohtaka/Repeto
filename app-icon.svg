@@ -1,0 +1,53 @@
+<svg width="1024" height="1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0A84FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#5AC8FA;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Shadow for depth -->
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="4"/>
+      <feOffset dx="0" dy="2" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.3"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Rounded rectangle background (iOS icon style) -->
+  <rect width="1024" height="1024" rx="226" fill="url(#bgGradient)"/>
+
+  <!-- Circular arrows representing repeat/cycle -->
+  <g transform="translate(512, 512)" filter="url(#shadow)">
+    <!-- Outer circle with arrow -->
+    <path d="M 0,-280 A 280,280 0 1,1 -280,0"
+          fill="none"
+          stroke="white"
+          stroke-width="56"
+          stroke-linecap="round"
+          opacity="0.9"/>
+
+    <!-- Arrow head at top -->
+    <path d="M -70,-260 L 0,-330 L 70,-260"
+          fill="none"
+          stroke="white"
+          stroke-width="56"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          opacity="0.9"/>
+
+    <!-- Center checkmark -->
+    <path d="M -80,0 L -20,80 L 100,-80"
+          fill="none"
+          stroke="white"
+          stroke-width="64"
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+  </g>
+</svg>
