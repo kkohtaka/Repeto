@@ -14,7 +14,7 @@ struct RepetoApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TaskListView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
