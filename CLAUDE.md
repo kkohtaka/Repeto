@@ -66,6 +66,42 @@ Repeto/
 - UI tests: `RepetoUITests/`
 - Coverage target: 70%+
 
+## Xcode File Management
+
+### Automatic File Synchronization
+
+This project uses **PBXFileSystemSynchronizedRootGroup** (Xcode 14+), which provides automatic file detection:
+
+- ✅ **No manual project.pbxproj editing** needed for Swift files
+- ✅ **Files are auto-detected** from the filesystem
+- ✅ **Fewer merge conflicts** in Git
+- ✅ **Simpler workflow**: Just add files to the correct directory
+
+### Adding New Files
+
+Simply create files in the appropriate directory:
+
+```bash
+# Create a new view
+touch Repeto/Views/NewView.swift
+
+# Create a new model extension
+touch Repeto/Models/NewModel+Extension.swift
+```
+
+Xcode will automatically:
+
+- Detect the new file
+- Include it in the build
+- Make it available for import
+
+### Important Notes
+
+- ⚠️ **Don't manually edit** project.pbxproj for file additions
+- ⚠️ **Use Xcode** if you need special build settings
+- ⚠️ **Resources** (images, plists) may still need manual configuration
+- ✅ **Swift files** in standard directories are auto-detected
+
 ## Commit Message Guidelines
 
 ### Format

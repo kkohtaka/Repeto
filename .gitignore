@@ -129,3 +129,6 @@ AuthKey_*.p8
 # IDE
 .vscode/
 .idea/
+
+# Xcode project backups
+*.pbxproj.backup
