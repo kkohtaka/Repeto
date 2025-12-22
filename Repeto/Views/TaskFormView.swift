@@ -5,6 +5,7 @@
 //  Created by Claude on 2025/12/20.
 //
 
+import CoreData
 import SwiftUI
 
 struct TaskFormView: View {

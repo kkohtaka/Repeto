@@ -5,6 +5,7 @@
 //  Created by Claude on 2025/12/20.
 //
 
+import Combine
 import CoreData
 import Foundation
 import SwiftUI
