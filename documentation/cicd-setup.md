@@ -57,19 +57,49 @@ Renovate Botが以下の依存関係を自動的に管理します：
 
 ### 必要な設定
 
-**Secret名**: `RENOVATE_TOKEN`
-**説明**: GitHub Personal Access Token (Fine-grained)
-**必要な権限**:
+RenovateはGitHub Appによる認証を使用します。
 
-- Contents: Read/Write
-- Pull requests: Read/Write
-- Metadata: Read-only
+#### GitHub Appの権限要件
+
+以下の権限を持つGitHub Appが必要です：
+
+- **Repository permissions**:
+  - Contents: Read and write
+  - Pull requests: Read and write
+  - Workflows: Read and write
+  - Metadata: Read-only
+
+#### 必要なGitHub Secrets
+
+| Secret名 | 説明 |
+| ------- | ---- |
+| `APP_ID` | GitHub AppのアプリケーションID |
+| `APP_PRIVATE_KEY` | GitHub Appの秘密鍵（PEM形式） |
 
 ### 実行スケジュール
 
 - **自動実行**: 毎週月曜日 9:00 AM JST
+- **手動実行**: GitHub Actions → Renovate → Run workflow
 - **設定ファイル**: `.github/renovate.json5`
 - **ワークフロー**: `.github/workflows/renovate.yml`
+
+### 自動マージ機能
+
+RenovateはCI（linterとテスト）が通過したPRを**自動的にマージ**します：
+
+- **対象**: major、minor、patch すべての更新
+- **条件**: すべてのCIチェックが成功
+- **マージ方法**: Squash merge
+
+手動でレビューしたい場合は、PRにコメントを追加するか、Dependency Dashboardで無効化できます。
+
+### Dependency Dashboard
+
+Renovateは**Dependency Dashboard** issueを自動作成し、すべての依存関係の更新状況を一覧表示します：
+
+- 保留中の更新
+- レート制限の状態
+- 問題が発生した更新
 
 ### 動作
 
