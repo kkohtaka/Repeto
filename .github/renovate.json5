@@ -1,98 +1,94 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended",
-  ],
-  "timezone": "Asia/Tokyo",
-  "schedule": [
-    "before 10am on monday",
-  ],
-  "labels": [
-    "dependencies",
-  ],
-  "commitMessagePrefix": "chore(deps):",
-  "prHourlyLimit": 0,
-  "prConcurrentLimit": 10,
-
-  // Package-specific rules
-  "packageRules": [
-    // GitHub Actions
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: ["config:recommended"],
+  dependencyDashboard: true,
+  dependencyDashboardApproval: false,
+  schedule: null,
+  labels: ["dependencies"],
+  commitMessagePrefix: "chore(deps):",
+  prHourlyLimit: 0,
+  prConcurrentLimit: 10,
+  platformAutomerge: true,
+  packageRules: [
     {
-      "matchManagers": ["github-actions"],
-      "addLabels": ["github-actions"],
-      "commitMessagePrefix": "chore(ci):",
-      "groupName": "GitHub Actions",
+      matchUpdateTypes: ["major", "minor", "patch"],
+      automerge: true,
+      automergeType: "pr",
+      description: "Auto-merge all updates after CI passes",
     },
-    // Development tools in tool-versions.env
     {
-      "matchManagers": ["regex"],
-      "matchFileNames": [".github/tool-versions.env"],
-      "addLabels": ["tools"],
-      "commitMessagePrefix": "chore(tools):",
-      "groupName": "Development Tools",
+      matchManagers: ["github-actions"],
+      addLabels: ["github-actions"],
+      commitMessagePrefix: "chore(ci):",
+      groupName: "GitHub Actions",
+    },
+    {
+      matchManagers: ["regex"],
+      matchFileNames: [".github/tool-versions.env"],
+      addLabels: ["tools"],
+      commitMessagePrefix: "chore(tools):",
+      groupName: "Development Tools",
     },
   ],
-
-  // Custom regex managers for tool-versions.env
-  "regexManagers": [
-    // actionlint
+  customManagers: [
     {
-      "fileMatch": ["^\\.github/tool-versions\\.env$"],
-      "matchStrings": [
+      customType: "regex",
+      managerFilePatterns: ["/^\\.github/tool-versions\\.env$/"],
+      matchStrings: [
         "# actionlint[^\\n]*\\nACTIONLINT_VERSION=(?<currentValue>.*?)\\n",
       ],
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "rhysd/actionlint",
-      "extractVersionTemplate": "^v?(?<version>.*)$",
+      datasourceTemplate: "github-releases",
+      depNameTemplate: "rhysd/actionlint",
+      extractVersionTemplate: "^v?(?<version>.*)$",
     },
-    // markdownlint-cli2
     {
-      "fileMatch": ["^\\.github/tool-versions\\.env$"],
-      "matchStrings": [
+      customType: "regex",
+      managerFilePatterns: ["/^\\.github/tool-versions\\.env$/"],
+      matchStrings: [
         "# markdownlint-cli2[^\\n]*\\nMARKDOWNLINT_CLI2_VERSION=(?<currentValue>.*?)\\n",
       ],
-      "datasourceTemplate": "npm",
-      "depNameTemplate": "markdownlint-cli2",
+      datasourceTemplate: "npm",
+      depNameTemplate: "markdownlint-cli2",
     },
-    // SwiftLint
     {
-      "fileMatch": ["^\\.github/tool-versions\\.env$"],
-      "matchStrings": [
+      customType: "regex",
+      managerFilePatterns: ["/^\\.github/tool-versions\\.env$/"],
+      matchStrings: [
         "# SwiftLint[^\\n]*\\nSWIFTLINT_VERSION=(?<currentValue>.*?)\\n",
       ],
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "realm/SwiftLint",
-      "extractVersionTemplate": "^v?(?<version>.*)$",
+      datasourceTemplate: "github-releases",
+      depNameTemplate: "realm/SwiftLint",
+      extractVersionTemplate: "^v?(?<version>.*)$",
     },
-    // GitHub CLI
     {
-      "fileMatch": ["^\\.github/tool-versions\\.env$"],
-      "matchStrings": [
+      customType: "regex",
+      managerFilePatterns: ["/^\\.github/tool-versions\\.env$/"],
+      matchStrings: [
         "# gh[^\\n]*\\nGH_VERSION=(?<currentValue>.*?)\\n",
       ],
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "cli/cli",
-      "extractVersionTemplate": "^v?(?<version>.*)$",
+      datasourceTemplate: "github-releases",
+      depNameTemplate: "cli/cli",
+      extractVersionTemplate: "^v?(?<version>.*)$",
     },
-    // Node.js
     {
-      "fileMatch": ["^\\.github/tool-versions\\.env$"],
-      "matchStrings": [
+      customType: "regex",
+      managerFilePatterns: ["/^\\.github/tool-versions\\.env$/"],
+      matchStrings: [
         "# Node\\.js[^\\n]*\\nNODE_VERSION=(?<currentValue>.*?)\\n",
       ],
-      "datasourceTemplate": "node-version",
-      "depNameTemplate": "node",
+      datasourceTemplate: "node-version",
+      depNameTemplate: "node",
       "versioningTemplate": "node",
     },
-    // shellcheck
     {
-      "fileMatch": ["^\\.github/tool-versions\\.env$"],
-      "matchStrings": [
+      customType: "regex",
+      managerFilePatterns: ["/^\\.github/tool-versions\\.env$/"],
+      matchStrings: [
         "# shellcheck[^\\n]*\\nSHELLCHECK_VERSION=(?<currentValue>.*?)\\n",
       ],
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "koalaman/shellcheck",
-      "extractVersionTemplate": "^v?(?<version>.*)$",
+      datasourceTemplate: "github-releases",
+      depNameTemplate: "koalaman/shellcheck",
+      extractVersionTemplate: "^v?(?<version>.*)$",
     },
   ],
 }
