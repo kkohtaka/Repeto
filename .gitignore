@@ -120,6 +120,12 @@ AuthKey_*.p8
 *.mobileprovision
 *.p12
 *.cer
+*-base64.txt
+
+# Firebase
+**/GoogleService-Info.plist
+**/google-services.json
+*firebase-service-account*.json
 
 # Temporary files
 *.swp
