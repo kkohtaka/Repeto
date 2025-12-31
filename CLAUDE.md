@@ -176,6 +176,68 @@ Related to #20
 5. **Update documentation if needed**
 6. Commit & push
 
+### Testing PR Changes with Firebase App Distribution
+
+1. Create PR as usual
+2. Add `firebase-preview` label to PR
+3. GitHub Actions automatically builds Ad Hoc IPA and uploads to Firebase
+4. Share the build with testers for early feedback
+5. Remove label if no longer needed (stops automatic builds)
+
+**Note:** Testers must have their device UDIDs registered in the Ad Hoc provisioning profile.
+
+## Firebase App Distribution (PR Preview Builds)
+
+### Overview
+
+PRs with the `firebase-preview` label automatically trigger Ad Hoc builds that are distributed
+via Firebase App Distribution. This allows testers to try changes before merging to main.
+
+### Workflow
+
+1. Create a PR
+2. Add the `firebase-preview` label
+3. GitHub Actions runs automatically:
+   - Builds Ad Hoc IPA (macOS runner)
+   - Uploads to Firebase App Distribution (Linux runner)
+   - Posts distribution info as PR comment
+4. Testers receive email notification
+5. Testers download and test the build
+
+### Build Numbers
+
+- **Firebase (PR)**: `2000000 + PR number` (e.g., PR #42 → `2000042`)
+- **TestFlight (Release)**: `github.run_number` (unchanged)
+
+This ensures no conflicts between PR preview builds and official releases.
+
+### Version String
+
+Format: `{marketing_version}-pr.{pr_number}`
+
+Example: `1.0.0-pr.42`
+
+### Adding Testers
+
+To add a new tester:
+
+1. Obtain tester's device UDID
+2. Register device in Apple Developer Portal
+3. Update Ad Hoc provisioning profile to include new device
+4. Download updated profile and Base64 encode it
+5. Update GitHub Secret `APPLE_ADHOC_PROVISION_PROFILE_BASE64`
+6. Trigger new build (profile change takes effect)
+
+### Required GitHub Secrets
+
+See `documentation/cicd-setup.md` for detailed information.
+
+- `FIREBASE_APP_ID`
+- `FIREBASE_SERVICE_ACCOUNT_JSON`
+- `APPLE_ADHOC_CERTIFICATE_BASE64`
+- `APPLE_ADHOC_CERTIFICATE_PASSWORD`
+- `APPLE_ADHOC_PROVISION_PROFILE_BASE64`
+
 ## GitHub Operations (Claude Code on Web)
 
 ### Creating Pull Requests

@@ -18,7 +18,7 @@ Repetoは、掃除や買い物などの定期的に繰り返すタスクを管�
 
 - [開発プランドキュメント](documentation/development-plan.md) - プロジェクトの開発計画、フェーズ、技術スタック
 - [デザインドキュメント](documentation/design.md) - アーキテクチャ、データモデル、UI/UX設計
-- [CI/CDセットアップガイド](documentation/cicd-setup.md) - GitHub Actionsによる自動ビルド・TestFlight配信
+- [CI/CDセットアップガイド](documentation/cicd-setup.md) - GitHub Actionsによる自動ビルド・Firebase/TestFlight配信
 
 ## 開発状況
 
@@ -31,7 +31,8 @@ Repetoは、掃除や買い物などの定期的に繰り返すタスクを管�
 - [x] iCloud同期設定
 - [x] CI/CDパイプライン構築
   - GitHub Actions自動ビルド
-  - TestFlight自動配信
+  - Firebase App Distribution（PRプレビュー用）
+  - TestFlight自動配信（リリース用）
   - SwiftLintによるコード品質チェック
 - [x] プライバシーポリシー公開
 
