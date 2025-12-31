@@ -3,6 +3,7 @@
 ## 概要
 
 - **CI (継続的インテグレーション)**: mainブランチへのpush/PRで自動ビルド・テスト
+- **Firebase App Distribution（PRプレビュー）**: PRに`firebase-preview`ラベルを付けることで、Ad HocビルドをFirebaseに自動配信
 - **TestFlight配信**: タグプッシュまたは手動トリガーで自動配信
 - **コード品質チェック**: SwiftLintによる自動コードレビュー
 
@@ -31,6 +32,8 @@ SwiftLint通過後、自動的にビルドが実行されます。
 
 ## GitHub Secretsの設定
 
+### TestFlight配信用
+
 TestFlight自動配信に必要な秘密情報をGitHub Secretsに登録してください。
 
 | Secret名 | 説明 | 備考 |
@@ -44,6 +47,20 @@ TestFlight自動配信に必要な秘密情報をGitHub Secretsに登録して�
 
 **Bundle ID**: `org.kkohtaka.Repeto`
 **Provisioning Profile名**: `Repeto App Store`
+
+### Firebase App Distribution用
+
+Firebase App Distributionによるプレビュービルド配信に必要な秘密情報を登録してください。
+
+| Secret名 | 説明 | 備考 |
+| ------- | ---- | ---- |
+| `FIREBASE_APP_ID` | Firebase App ID | Firebase Console → プロジェクト設定から取得 |
+| `FIREBASE_SERVICE_ACCOUNT_JSON` | サービスアカウントJSON秘密鍵の内容 | Google Cloud Consoleで生成 |
+| `APPLE_ADHOC_CERTIFICATE_BASE64` | Ad Hoc Distribution証明書（.p12形式、Base64エンコード） | TestFlightとは別の証明書 |
+| `APPLE_ADHOC_CERTIFICATE_PASSWORD` | Ad Hoc証明書のパスワード | - |
+| `APPLE_ADHOC_PROVISION_PROFILE_BASE64` | Ad Hoc Provisioning Profile（Base64エンコード） | テスターのデバイスUDIDを登録 |
+
+**Provisioning Profile名**: `Repeto Ad Hoc`
 
 ---
 
@@ -109,6 +126,105 @@ Renovateは関連する更新を自動的にグループ化してPRを作成し�
 2. **開発ツール更新**: `chore(tools): Update Development Tools` ラベル: `dependencies`, `tools`
 
 詳細は`CLAUDE.md`の「Dependency Management (Renovate)」セクションを参照してください。
+
+---
+
+## Firebase App Distribution（PRプレビュー）
+
+### 概要
+
+PRに`firebase-preview`ラベルを付けることで、Ad HocビルドをFirebase App Distributionに自動配信します。
+
+**メリット:**
+
+- 即座にテスト可能（Appleレビュー不要）
+- PRレビュー時に実機で動作確認
+- TestFlightのビルド番号を消費しない
+
+**デメリット:**
+
+- Ad Hocプロファイルの管理が必要（デバイスUDID登録）
+- テスターの初回セットアップが複雑
+
+### 使い方
+
+#### 開発者側
+
+1. PRを作成
+2. PRに`firebase-preview`ラベルを追加
+3. GitHub Actionsが自動的にビルド & Firebase配信
+4. PRコメントに配布情報が投稿される
+
+#### テスター側
+
+初回のみ以下の準備が必要:
+
+1. **デバイスUDIDを開発者に共有**
+   - Finderでデバイスを接続 → デバイス情報をクリック → UDIDをコピー
+   - または、Xcodeの**Window** → **Devices and Simulators**から確認
+2. **開発者がUDIDを登録**（Apple Developer Portal）
+3. **Developer Modeを有効化**（iOS 16以降）
+   - **設定** → **プライバシーとセキュリティ** → **Developer Mode** → **オン**
+   - デバイスを再起動
+4. **メールで招待を受け取る**
+5. **リンクからアプリをダウンロード**
+
+### ビルド番号
+
+- **Firebase (PR)**: `2000000 + PR番号` (例: PR #42 → `2000042`)
+- **TestFlight (リリース)**: `github.run_number` (従来通り)
+
+この方式により、ビルド番号の衝突を回避しています。
+
+### テスター追加手順
+
+新しいテスターを追加する場合:
+
+1. テスターからデバイスUDIDを取得
+2. Apple Developer Portal → **Devices** → 新規登録
+3. **Profiles** → `Repeto Ad Hoc`を編集 → デバイス追加
+4. 更新されたプロファイルをダウンロード & Base64エンコード
+5. GitHub Secretsの`APPLE_ADHOC_PROVISION_PROFILE_BASE64`を更新
+6. 新しいビルドを配信（プロファイル更新が反映される）
+
+### トラブルシューティング
+
+#### ビルドが失敗する場合
+
+**証明書エラー:**
+
+- Base64エンコードが正しいか確認
+- 証明書の有効期限を確認（Apple Developer Portalで確認）
+- 証明書のパスワードが正しいか確認
+
+**プロファイルエラー:**
+
+- プロファイルのApp IDが`org.kkohtaka.Repeto`と一致するか確認
+- プロファイルが**Ad Hoc**タイプであることを確認
+- プロファイルに証明書が含まれているか確認
+
+#### Firebaseアップロードが失敗する場合
+
+- `FIREBASE_SERVICE_ACCOUNT_JSON`の内容が正しいか確認（JSONファイル全体）
+- サービスアカウントに`Firebase App Distribution Admin`役割があるか確認（Google Cloud Console）
+- `FIREBASE_APP_ID`が正しいか確認（Firebase Console → プロジェクト設定）
+
+#### テスターがダウンロードできない場合
+
+**デバイス未登録:**
+
+- テスターのデバイスUDIDがProvisioning Profileに含まれているか確認
+- プロファイル更新後は新しいビルドを配信する必要がある
+
+**iOS 16+でDeveloper Mode無効:**
+
+- 設定 → プライバシーとセキュリティ → Developer Mode → オン
+- デバイスを再起動
+
+**プロファイルインストールエラー:**
+
+- Safariブラウザで再度試す（他のブラウザでは失敗する場合がある）
+- デバイスを再起動して再試行
 
 ---
 
