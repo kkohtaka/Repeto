@@ -52,15 +52,24 @@ TestFlight自動配信に必要な秘密情報をGitHub Secretsに登録して�
 
 Firebase App Distributionによるプレビュービルド配信に必要な秘密情報を登録してください。
 
+**認証方式**: Workload Identity Federation (WIF)
+
 | Secret名 | 説明 | 備考 |
 | ------- | ---- | ---- |
-| `FIREBASE_APP_ID` | Firebase App ID | Firebase Console → プロジェクト設定から取得 |
-| `FIREBASE_SERVICE_ACCOUNT_JSON` | サービスアカウントJSON秘密鍵の内容 | Google Cloud Consoleで生成 |
-| `APPLE_ADHOC_CERTIFICATE_BASE64` | Ad Hoc Distribution証明書（.p12形式、Base64エンコード） | TestFlightとは別の証明書 |
+| `FIREBASE_APP_ID` | Firebase App ID | Firebase Console → プロジェクト設定 |
+| `WIF_PROVIDER` | Workload Identity Providerの完全な名前 | Google Cloud IAMで生成 |
+| `WIF_SERVICE_ACCOUNT` | サービスアカウントのメールアドレス | Google Cloud IAMで生成 |
+| `APPLE_ADHOC_CERTIFICATE_BASE64` | Ad Hoc Distribution証明書（Base64） | TestFlightとは別の証明書 |
 | `APPLE_ADHOC_CERTIFICATE_PASSWORD` | Ad Hoc証明書のパスワード | - |
-| `APPLE_ADHOC_PROVISION_PROFILE_BASE64` | Ad Hoc Provisioning Profile（Base64エンコード） | テスターのデバイスUDIDを登録 |
+| `APPLE_ADHOC_PROVISION_PROFILE_BASE64` | Ad Hoc Provisioning Profile（Base64） | デバイスUDIDを登録 |
 
 **Provisioning Profile名**: `Repeto Ad Hoc`
+
+**セキュリティ上のメリット:**
+
+- 長期的な認証情報（JSON鍵）を保存する必要がない
+- 短命のOIDCトークンによる認証
+- 自動的な鍵ローテーション
 
 ---
 
