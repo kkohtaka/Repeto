@@ -232,8 +232,14 @@ To add a new tester:
 
 See `documentation/cicd-setup.md` for detailed information.
 
+**Firebase Authentication (Workload Identity Federation):**
+
 - `FIREBASE_APP_ID`
-- `FIREBASE_SERVICE_ACCOUNT_JSON`
+- `WIF_PROVIDER`
+- `WIF_SERVICE_ACCOUNT`
+
+**Apple Code Signing (Ad Hoc):**
+
 - `APPLE_ADHOC_CERTIFICATE_BASE64`
 - `APPLE_ADHOC_CERTIFICATE_PASSWORD`
 - `APPLE_ADHOC_PROVISION_PROFILE_BASE64`
