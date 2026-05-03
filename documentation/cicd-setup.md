@@ -214,8 +214,9 @@ PRに`firebase-preview`ラベルを付けることで、Ad HocビルドをFireba
 
 #### Firebaseアップロードが失敗する場合
 
-- `FIREBASE_SERVICE_ACCOUNT_JSON`の内容が正しいか確認（JSONファイル全体）
+- `WIF_PROVIDER`と`WIF_SERVICE_ACCOUNT`が正しく設定されているか確認
 - サービスアカウントに`Firebase App Distribution Admin`役割があるか確認（Google Cloud Console）
+- Workload Identity PoolにGitHubリポジトリの属性マッピングが正しく設定されているか確認
 - `FIREBASE_APP_ID`が正しいか確認（Firebase Console → プロジェクト設定）
 
 #### テスターがダウンロードできない場合
