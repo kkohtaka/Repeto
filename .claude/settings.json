@@ -10,5 +10,23 @@
         ]
       }
     ]
+  },
+  "permissions": {
+    "allow": [
+      "mcp__xcodebuildmcp__project-discovery__discover-projects",
+      "mcp__xcodebuildmcp__project-discovery__list-schemes",
+      "mcp__xcodebuildmcp__project-discovery__show-build-settings",
+      "mcp__xcodebuildmcp__simulator-management__list",
+      "mcp__xcodebuildmcp__simulator__build",
+      "mcp__xcodebuildmcp__simulator__test",
+      "mcp__xcodebuildmcp__simulator__build-and-run",
+      "mcp__xcodebuildmcp__simulator__get-coverage-report",
+      "mcp__xcodebuildmcp__simulator__get-file-coverage",
+      "mcp__xcodebuildmcp__simulator__screenshot",
+      "mcp__xcodebuildmcp__simulator__snapshot-ui",
+      "mcp__xcodebuildmcp__utilities__clean",
+      "mcp__xcodebuildmcp__coverage__get-coverage-report",
+      "mcp__xcodebuildmcp__coverage__get-file-coverage"
+    ]
   }
 }
