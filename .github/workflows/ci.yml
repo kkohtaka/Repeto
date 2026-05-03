@@ -26,6 +26,10 @@ jobs:
       - name: Show Swift version
         run: swift --version
 
+      - name: Download iOS platform
+        run: xcodebuild -downloadPlatform iOS
+        timeout-minutes: 30
+
       - name: List available simulators
         run: xcrun simctl list devices available iOS
 
@@ -97,6 +101,10 @@ jobs:
 
       - name: Show Xcode version
         run: xcodebuild -version
+
+      - name: Download iOS platform
+        run: xcodebuild -downloadPlatform iOS
+        timeout-minutes: 30
 
       - name: Load tool versions
         id: load_versions

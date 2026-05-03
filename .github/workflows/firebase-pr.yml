@@ -46,6 +46,10 @@ jobs:
       - name: Show Xcode version
         run: xcodebuild -version
 
+      - name: Download iOS platform
+        run: xcodebuild -downloadPlatform iOS
+        timeout-minutes: 30
+
       - name: Install Apple Certificate and Provisioning Profile (Ad Hoc)
         env:
           CERTIFICATE_BASE64: ${{ secrets.APPLE_ADHOC_CERTIFICATE_BASE64 }}
