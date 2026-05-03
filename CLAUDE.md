@@ -29,7 +29,7 @@
   - SwiftLint: `swiftlint`
   - Markdownlint (if Markdown changed): `npx markdownlint-cli2 "**/*.md"`
   - Actionlint (if workflows changed): `actionlint`
-- [ ] Run tests: `xcodebuild test -scheme Repeto -destination 'platform=iOS Simulator,name=Any iOS Simulator Device'`
+- [ ] Run tests: XcodeBuildMCP `simulator:test` (scheme: Repeto)
 - [ ] Update CLAUDE.md if needed (for significant changes)
 - [ ] **Write commit message in Conventional Commits format (English)**
 
@@ -66,41 +66,43 @@ Repeto/
 - UI tests: `RepetoUITests/`
 - Coverage target: 70%+
 
-## Xcode File Management
+## Xcode Project Generation (XcodeGen)
 
-### Automatic File Synchronization
+This project uses **XcodeGen** to auto-generate `Repeto.xcodeproj` from `project.yml`.
+`Repeto.xcodeproj` is excluded from Git — do not commit it.
 
-This project uses **PBXFileSystemSynchronizedRootGroup** (Xcode 14+), which provides automatic file detection:
+### Setup (after fresh clone)
 
-- ✅ **No manual project.pbxproj editing** needed for Swift files
-- ✅ **Files are auto-detected** from the filesystem
-- ✅ **Fewer merge conflicts** in Git
-- ✅ **Simpler workflow**: Just add files to the correct directory
+```bash
+brew install xcodegen
+xcodegen generate
+```
 
 ### Adding New Files
 
-Simply create files in the appropriate directory:
+Create files in the appropriate directory, then regenerate:
 
 ```bash
 # Create a new view
 touch Repeto/Views/NewView.swift
 
-# Create a new model extension
-touch Repeto/Models/NewModel+Extension.swift
+# Regenerate the Xcode project
+xcodegen generate
 ```
 
-Xcode will automatically:
+### Changing Build Settings
 
-- Detect the new file
-- Include it in the build
-- Make it available for import
+Edit `project.yml` (the single source of truth), then regenerate:
+
+```bash
+xcodegen generate
+```
 
 ### Important Notes
 
-- ⚠️ **Don't manually edit** project.pbxproj for file additions
-- ⚠️ **Use Xcode** if you need special build settings
-- ⚠️ **Resources** (images, plists) may still need manual configuration
-- ✅ **Swift files** in standard directories are auto-detected
+- ⚠️ **Never manually edit** `project.pbxproj` — it is generated and will be overwritten
+- ✅ **Edit `project.yml`** for all build settings, target, and capability changes
+- ✅ **Run `xcodegen generate`** after any change to `project.yml` or after adding/removing files
 
 ## Commit Message Guidelines
 
@@ -390,23 +392,20 @@ actionlint                          # Check all workflow files
 
 ## Testing
 
-```bash
-# List available simulators
-xcrun simctl list devices available iOS
+Use XcodeBuildMCP tools (MCP server: `xcodebuildmcp`) instead of xcodebuild CLI directly.
 
-# Run all tests
-xcodebuild test \
-  -project Repeto.xcodeproj \
-  -scheme Repeto \
-  -destination 'platform=iOS Simulator,name=iPhone 15'
+| Operation | MCP Tool |
+| --- | --- |
+| List simulators | `simulator-management:list` |
+| Build | `simulator:build` (scheme: Repeto) |
+| Run all tests | `simulator:test` (scheme: Repeto) |
+| Build & launch app | `simulator:build-and-run` (scheme: Repeto) |
+| Clean build products | `utilities:clean` |
+| Code coverage report | `coverage:get-coverage-report` |
+| Discover project | `project-discovery:discover-projects` |
+| List schemes | `project-discovery:list-schemes` |
 
-# Run specific test
-xcodebuild test \
-  -project Repeto.xcodeproj \
-  -scheme Repeto \
-  -destination 'platform=iOS Simulator,name=iPhone 15' \
-  -only-testing:RepetoTests/TaskServiceTests
-```
+For UI automation (screenshots, taps, etc.), use the `ui-automation:*` tools.
 
 ## Dependency Management (Renovate)
 

@@ -138,3 +138,9 @@ AuthKey_*.p8
 
 # Xcode project backups
 *.pbxproj.backup
+
+# XcodeGen - generated from project.yml, do not commit
+Repeto.xcodeproj/
+
+# XcodeBuildMCP - local session defaults (contains absolute paths)
+.xcodebuildmcp/

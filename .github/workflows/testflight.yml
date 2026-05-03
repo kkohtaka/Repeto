@@ -63,6 +63,23 @@ jobs:
           echo "Installed provisioning profiles:"
           ls -la ~/Library/MobileDevice/Provisioning\ Profiles/
 
+      - name: Load tool versions
+        id: load_versions
+        run: |
+          # shellcheck source=../../.github/tool-versions.env
+          source .github/tool-versions.env
+          echo "xcodegen_version=${XCODEGEN_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Install XcodeGen
+        run: |
+          brew install xcodegen
+          INSTALLED=$(xcodegen version)
+          EXPECTED="${{ steps.load_versions.outputs.xcodegen_version }}"
+          echo "XcodeGen installed: ${INSTALLED} (expected: ${EXPECTED})"
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
       - name: Increment build number
         id: build_number
         run: |
