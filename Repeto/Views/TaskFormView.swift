@@ -33,7 +33,6 @@ struct TaskFormView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button(viewModel.saveButtonTitle) { saveTask() }
-                        .disabled(viewModel.isSaving)
                 }
             }
             .alert("エラー", isPresented: $showError) {
