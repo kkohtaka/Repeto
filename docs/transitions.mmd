@@ -1,0 +1,12 @@
+%%{init: {'theme': 'default'}}%%
+flowchart TD
+    Start([App Launch]) --> TaskListView
+
+    TaskListView -->|"+ (Add Task)"| TaskFormView_Create["TaskFormView\n(create mode)"]
+    TaskListView -->|"Edit (swipe action)"| TaskFormView_Edit["TaskFormView\n(edit mode)"]
+
+    TaskFormView_Create -->|"Cancel"| TaskListView
+    TaskFormView_Create -->|"Save"| TaskListView
+
+    TaskFormView_Edit -->|"Cancel"| TaskListView
+    TaskFormView_Edit -->|"Save"| TaskListView

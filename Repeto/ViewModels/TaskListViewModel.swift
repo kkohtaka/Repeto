@@ -5,16 +5,16 @@
 //  Created by Claude on 2025/12/20.
 //
 
-import Combine
 import CoreData
 import Foundation
-import SwiftUI
+import Observation
 
 @MainActor
-final class TaskListViewModel: ObservableObject {
+@Observable
+final class TaskListViewModel {
     private let taskService: TaskService
-    @Published var errorMessage: String?
-    @Published var showError = false
+    var errorMessage: String?
+    var showError = false
 
     init(context: NSManagedObjectContext) {
         self.taskService = TaskService(context: context)
@@ -22,25 +22,6 @@ final class TaskListViewModel: ObservableObject {
 
     // MARK: - Task Operations
 
-    /// Fetches all active tasks grouped by status
-    func fetchGroupedTasks() throws -> GroupedTasks {
-        try taskService.fetchTasksGrouped()
-    }
-
-    /// Returns the total count of active tasks
-    func activeTaskCount() throws -> Int {
-        try taskService.activeTaskCount()
-    }
-
-    /// Returns the count of overdue tasks
-    func overdueTaskCount() throws -> Int {
-        try taskService.overdueTaskCount()
-    }
-
-    // MARK: - Task Completion
-
-    /// Marks a task as completed and calculates next reminder date
-    /// - Parameter task: The task to complete
     func completeTask(_ task: Task) {
         do {
             try taskService.completeTask(task)
@@ -49,8 +30,6 @@ final class TaskListViewModel: ObservableObject {
         }
     }
 
-    /// Deletes a task
-    /// - Parameter task: The task to delete
     func deleteTask(_ task: Task) {
         do {
             try taskService.deleteTask(task)

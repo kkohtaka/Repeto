@@ -12,42 +12,34 @@ struct TaskRowView: View {
     let task: Task
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            // Task name
+        VStack(alignment: .leading, spacing: DesignSystem.spacing(.xs)) {
             Text(task.displayName)
                 .font(.body)
-                .foregroundColor(.primary)
+                .foregroundStyle(.primary)
 
-            // Next reminder date with status color
-            HStack(spacing: 4) {
+            HStack(spacing: DesignSystem.spacing(.xs)) {
                 Image(systemName: "bell.fill")
                     .font(.caption2)
-                    .foregroundColor(statusColor)
+                    .foregroundStyle(statusColor)
 
                 Text(task.safeNextReminderAt.relativeDateString)
                     .font(.subheadline)
-                    .foregroundColor(statusColor)
+                    .foregroundStyle(statusColor)
             }
 
-            // Interval information
             Text(task.intervalText)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, DesignSystem.spacing(.xs))
     }
 
-    /// Color based on task status
     private var statusColor: Color {
         switch task.status {
-        case .overdue:
-            return .red
-        case .today:
-            return .orange
-        case .upcoming:
-            return .primary
-        case .unknown:
-            return .secondary
+        case .overdue:  DesignSystem.statusColor(.overdue)
+        case .today:    DesignSystem.statusColor(.today)
+        case .upcoming: DesignSystem.statusColor(.upcoming)
+        case .unknown:  .secondary
         }
     }
 }
@@ -60,10 +52,7 @@ struct TaskRowView: View {
     task.intervalDays = 7
     task.nextReminderAt = Calendar.current.date(byAdding: .day, value: -2, to: Date())
     task.createdAt = Date()
-
-    return List {
-        TaskRowView(task: task)
-    }
+    return List { TaskRowView(task: task) }
 }
 
 #Preview("Today Task") {
@@ -74,10 +63,7 @@ struct TaskRowView: View {
     task.intervalDays = 3
     task.nextReminderAt = Date()
     task.createdAt = Date()
-
-    return List {
-        TaskRowView(task: task)
-    }
+    return List { TaskRowView(task: task) }
 }
 
 #Preview("Upcoming Task") {
@@ -88,8 +74,5 @@ struct TaskRowView: View {
     task.intervalDays = 1
     task.nextReminderAt = Calendar.current.date(byAdding: .day, value: 2, to: Date())
     task.createdAt = Date()
-
-    return List {
-        TaskRowView(task: task)
-    }
+    return List { TaskRowView(task: task) }
 }
