@@ -5,7 +5,7 @@
 //  Created by Kazumasa Kohtaka on 2025/11/01.
 //
 
-import CoreData
+@preconcurrency import CoreData
 
 struct PersistenceController {
     static let shared = PersistenceController()

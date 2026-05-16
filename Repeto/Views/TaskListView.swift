@@ -5,16 +5,16 @@
 //  Created by Claude on 2025/12/20.
 //
 
-import SwiftUI
 import CoreData
-import UIKit
+import SwiftUI
 
 struct TaskListView: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @StateObject private var viewModel: TaskListViewModel
+    @State private var viewModel: TaskListViewModel
     @State private var showingTaskForm = false
     @State private var showingEditForm = false
     @State private var taskToEdit: Task?
+    @State private var hapticTrigger = false
 
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \Task.nextReminderAt, ascending: true)],
@@ -24,9 +24,8 @@ struct TaskListView: View {
     private var tasks: FetchedResults<Task>
 
     init() {
-        // Initialize ViewModel with shared context
         let context = PersistenceController.shared.container.viewContext
-        _viewModel = StateObject(wrappedValue: TaskListViewModel(context: context))
+        _viewModel = State(wrappedValue: TaskListViewModel(context: context))
     }
 
     var body: some View {
@@ -39,6 +38,7 @@ struct TaskListView: View {
                 }
             }
             .navigationTitle("Repeto")
+            .sensoryFeedback(.impact(weight: .medium), trigger: hapticTrigger)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
@@ -46,6 +46,7 @@ struct TaskListView: View {
                     } label: {
                         Image(systemName: "plus")
                     }
+                    .accessibilityLabel("タスクを追加")
                 }
             }
             .sheet(isPresented: $showingTaskForm) {
@@ -69,10 +70,10 @@ struct TaskListView: View {
     // MARK: - Empty State
 
     private var emptyStateView: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: DesignSystem.spacing(.lg)) {
             Image(systemName: "checkmark.circle")
-                .font(.system(size: 80))
-                .foregroundColor(.blue)
+                .font(.system(size: DesignSystem.iconSize(.lg)))
+                .foregroundStyle(.accent)
 
             Text("タスクがありません")
                 .font(.title2)
@@ -80,7 +81,7 @@ struct TaskListView: View {
 
             Text("+ ボタンから新しいタスクを追加しましょう")
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
         }
         .padding()
@@ -90,39 +91,24 @@ struct TaskListView: View {
 
     private var taskListView: some View {
         List {
-            // Overdue section
             let overdueTasks = tasks.filter { $0.isOverdue }
             if !overdueTasks.isEmpty {
-                Section {
-                    ForEach(overdueTasks, id: \.objectID) { task in
-                        taskRow(for: task)
-                    }
-                } header: {
-                    Text("期限切れ")
+                Section("期限切れ") {
+                    ForEach(overdueTasks, id: \.objectID) { taskRow(for: $0) }
                 }
             }
 
-            // Today section
             let todayTasks = tasks.filter { $0.isToday }
             if !todayTasks.isEmpty {
-                Section {
-                    ForEach(todayTasks, id: \.objectID) { task in
-                        taskRow(for: task)
-                    }
-                } header: {
-                    Text("今日")
+                Section("今日") {
+                    ForEach(todayTasks, id: \.objectID) { taskRow(for: $0) }
                 }
             }
 
-            // Upcoming section
             let upcomingTasks = tasks.filter { $0.isUpcoming }
             if !upcomingTasks.isEmpty {
-                Section {
-                    ForEach(upcomingTasks, id: \.objectID) { task in
-                        taskRow(for: task)
-                    }
-                } header: {
-                    Text("今後")
+                Section("今後") {
+                    ForEach(upcomingTasks, id: \.objectID) { taskRow(for: $0) }
                 }
             }
         }
@@ -134,9 +120,9 @@ struct TaskListView: View {
     private func taskRow(for task: Task) -> some View {
         TaskRowView(task: task)
             .contentShape(Rectangle())
-            .onTapGesture {
-                completeTask(task)
-            }
+            .onTapGesture { completeTask(task) }
+            .accessibilityLabel(task.displayName)
+            .accessibilityHint("タップして完了")
             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                 Button(role: .destructive) {
                     deleteTask(task)
@@ -156,20 +142,14 @@ struct TaskListView: View {
     // MARK: - Actions
 
     private func completeTask(_ task: Task) {
-        // Haptic feedback
-        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-        impactFeedback.impactOccurred()
-
-        // Visual feedback with animation
+        hapticTrigger.toggle()
         withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
             viewModel.completeTask(task)
         }
     }
 
     private func deleteTask(_ task: Task) {
-        withAnimation {
-            viewModel.deleteTask(task)
-        }
+        withAnimation { viewModel.deleteTask(task) }
     }
 
     private func editTask(_ task: Task) {
@@ -186,7 +166,6 @@ struct TaskListView: View {
 #Preview("With Tasks") {
     let context = PersistenceController.preview.container.viewContext
 
-    // Create sample tasks
     let overdueTask = Task(context: context)
     overdueTask.id = UUID()
     overdueTask.name = "部屋の掃除"

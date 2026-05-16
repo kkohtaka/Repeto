@@ -43,7 +43,6 @@ extension Date {
     /// Returns relative date string (e.g., "今日", "明日", "昨日")
     var relativeDateString: String {
         let calendar = Calendar.current
-        let now = Date()
 
         if calendar.isDateInToday(self) {
             return "今日"
