@@ -20,7 +20,6 @@ final class TaskFormViewModel {
     var nextReminderDate: Date = Date()
     var nameError: String?
     var intervalError: String?
-    var isSaving = false
 
     var isEditMode: Bool { task != nil }
     var title: String { isEditMode ? "タスク編集" : "新しいタスク" }
@@ -37,9 +36,35 @@ final class TaskFormViewModel {
         }
     }
 
+    // MARK: - Save
+
+    func save() throws {
+        guard validate() else { return }
+
+        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let interval = Int32(intervalDays) else {
+            throw ValidationError.invalidInterval
+        }
+
+        if let task {
+            try taskService.updateTask(
+                task,
+                name: trimmedName,
+                intervalDays: interval,
+                nextReminderAt: nextReminderDate
+            )
+        } else {
+            try taskService.createTask(
+                name: trimmedName,
+                intervalDays: interval,
+                nextReminderAt: nextReminderDate
+            )
+        }
+    }
+
     // MARK: - Validation
 
-    func validate() -> Bool {
+    private func validate() -> Bool {
         var isValid = true
 
         if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
@@ -57,33 +82,6 @@ final class TaskFormViewModel {
         }
 
         return isValid
-    }
-
-    // MARK: - Save
-
-    func save() throws {
-        guard validate() else { return }
-
-        isSaving = true
-        defer { isSaving = false }
-
-        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard let interval = Int32(intervalDays) else {
-            throw ValidationError.invalidInterval
-        }
-
-        if let task {
-            task.name = trimmedName
-            task.intervalDays = interval
-            task.nextReminderAt = nextReminderDate
-            try taskService.updateTask(task)
-        } else {
-            try taskService.createTask(
-                name: trimmedName,
-                intervalDays: interval,
-                nextReminderAt: nextReminderDate
-            )
-        }
     }
 
     enum ValidationError: LocalizedError {
