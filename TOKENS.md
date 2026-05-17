@@ -8,13 +8,13 @@ All color, spacing, and radius values in Swift code and asset generation scripts
 ### Accent
 
 | Token | Value | Usage |
-|---|---|---|
+| --- | --- | --- |
 | `accent` | `#007AFF` (iOS system blue) | Primary action buttons, icons |
 
 ### Task Status
 
 | Token | Value | Usage |
-|---|---|---|
+| --- | --- | --- |
 | `status.overdue` | `.red` (system) | Overdue task highlighting |
 | `status.today` | `.orange` (system) | Today's task highlighting |
 | `status.upcoming` | `.primary` (system) | Upcoming tasks (default) |
@@ -22,7 +22,7 @@ All color, spacing, and radius values in Swift code and asset generation scripts
 ### Semantic
 
 | Token | Value | Usage |
-|---|---|---|
+| --- | --- | --- |
 | `secondary` | `.secondary` (system) | Secondary text, hints |
 | `destructive` | `.red` (system) | Delete actions, error messages |
 
@@ -31,7 +31,7 @@ All color, spacing, and radius values in Swift code and asset generation scripts
 All spacing values are in points (pt).
 
 | Token | Value | Usage |
-|---|---|---|
+| --- | --- | --- |
 | `spacing.xs` | `4` | Tight gaps (e.g., icon-to-label) |
 | `spacing.sm` | `8` | Small gaps (e.g., between form fields) |
 | `spacing.md` | `16` | Default padding |
@@ -41,7 +41,7 @@ All spacing values are in points (pt).
 ## Corner Radius
 
 | Token | Value | Usage |
-|---|---|---|
+| --- | --- | --- |
 | `radius.sm` | `8` | Small cards, tags |
 | `radius.md` | `12` | Standard cards |
 | `radius.lg` | `16` | Large cards, sheets |
@@ -49,7 +49,7 @@ All spacing values are in points (pt).
 ## Icon Sizes
 
 | Token | Value | Usage |
-|---|---|---|
+| --- | --- | --- |
 | `iconSize.sm` | `20` | Toolbar icons |
 | `iconSize.md` | `44` | Standard icons |
 | `iconSize.lg` | `80` | Empty state illustration |
@@ -59,7 +59,7 @@ All spacing values are in points (pt).
 Follow iOS Human Interface Guidelines. Use system fonts at system-defined sizes.
 
 | Token | SwiftUI | Usage |
-|---|---|---|
+| --- | --- | --- |
 | `text.largeTitle` | `.largeTitle` | Screen titles |
 | `text.title2` | `.title2` | Section headings, empty state title |
 | `text.headline` | `.headline` | Task name in row |

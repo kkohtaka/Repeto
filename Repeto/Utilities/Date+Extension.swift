@@ -9,10 +9,10 @@ import Foundation
 
 extension Date {
     private static let shortDateFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.locale = Locale(identifier: "ja_JP")
-        f.dateFormat = "M月d日 (E)"
-        return f
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ja_JP")
+        formatter.dateFormat = "M月d日 (E)"
+        return formatter
     }()
 
     /// Formats date as "M月d日 (E)" (e.g., "12月20日 (金)")
