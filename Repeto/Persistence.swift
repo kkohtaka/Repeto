@@ -5,7 +5,7 @@
 //  Created by Kazumasa Kohtaka on 2025/11/01.
 //
 
-import CoreData
+@preconcurrency import CoreData
 
 struct PersistenceController {
     static let shared = PersistenceController()
@@ -25,9 +25,8 @@ struct PersistenceController {
             newTask.isArchived = false
 
             if i < 2 {
-                // 最初の2つは完了済みとして設定
-                newTask.lastCompletedAt = Date().addingTimeInterval(-Double(i + 1) * 86400)
-                newTask.nextReminderAt = Date().addingTimeInterval(Double((i + 1) * 7) * 86400)
+                newTask.lastCompletedAt = Calendar.current.date(byAdding: .day, value: -(i + 1), to: Date())
+                newTask.nextReminderAt = Calendar.current.date(byAdding: .day, value: (i + 1) * 7, to: Date())
             }
         }
 
