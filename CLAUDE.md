@@ -13,14 +13,16 @@ You are a senior iOS engineer on this project. Follow these guidelines strictly.
 
 ### No Direct Editing of `.pbxproj`
 
-Never manually edit the `.pbxproj` file inside `.xcodeproj`. Direct edits by agents carry an extremely high risk of corruption and are strictly forbidden.
+Never manually edit the `.pbxproj` file inside `.xcodeproj`. Direct edits by agents carry an extremely
+high risk of corruption and are strictly forbidden.
 
 ### Manage the Project with XcodeGen
 
 This project uses **XcodeGen** to auto-generate `Repeto.xcodeproj` from `project.yml`.
 `Repeto.xcodeproj` is excluded from Git — do not commit it.
 
-After adding, deleting, or renaming any file, run the following command from the project root to regenerate the project file:
+After adding, deleting, or renaming any file, run the following command from the project root
+to regenerate the project file:
 
 ```bash
 xcodegen generate
@@ -59,7 +61,8 @@ xcodegen generate
 
 Hardcoding raw numeric values directly into `Color` or `.padding()` is forbidden.
 
-Always use the design tokens defined in `TOKENS.md` (e.g., `.designSystem(.spacing(.md))`) to ensure design consistency and accessibility.
+Always use the design tokens defined in `TOKENS.md` (e.g., `.designSystem(.spacing(.md))`)
+to ensure design consistency and accessibility.
 
 ### Accessibility
 
@@ -92,13 +95,14 @@ For UI automation (screenshots, taps, etc.), use the `ui-automation:*` tools.
 
 #### Navigation and Screen Changes
 
-When making any of the following changes, update `docs/transitions.mmd` **in the same commit**. Omissions are also detected by the Git pre-commit hook.
+When making any of the following changes, update `docs/transitions.mmd` **in the same commit**.
+Omissions are also detected by the Git pre-commit hook.
 
 | Type of change | Example |
-|---|---|
+| --- | --- |
 | Add a new screen (View) | Create `FooView.swift` |
 | Delete or rename an existing screen | Delete / rename `BarView.swift` |
-| Add, change, or remove navigation between screens | Add a transition trigger, change `NavigationLink` / `sheet` / phase transition |
+| Add, change, or remove navigation | Add a trigger or change `NavigationLink` / `sheet` / phase transition |
 | Change a trigger label | Change button label text |
 
 If documentation updates are not required (e.g., style fixes, bug fixes, test additions), state so in the commit message.
@@ -119,23 +123,29 @@ If documentation updates are not required (e.g., style fixes, bug fixes, test ad
 
 ### Policy
 
-App icons and other image assets are generated via **Swift scripts using AppKit**, rather than relying on external tools or manual work. This keeps assets manageable as code and makes design changes easy.
+App icons and other image assets are generated via **Swift scripts using AppKit**, rather than
+relying on external tools or manual work. This keeps assets manageable as code and makes design
+changes easy.
 
 ### Steps
 
 1. **Create the script**: Place Swift scripts under the `scripts/` directory.
-   - Create a bitmap context with `NSBitmapImageRep` and set it as `NSGraphicsContext.current` to avoid unintended Retina scaling (@2x).
+   - Create a bitmap context with `NSBitmapImageRep` and set it as `NSGraphicsContext.current`
+     to avoid unintended Retina scaling (@2x).
    - Use `NSBezierPath`, `NSColor`, and `NSString.draw(in:withAttributes:)` for drawing.
    - Output to the appropriate `appiconset` or `imageset` under `Repeto/Assets.xcassets/`.
 
-2. **Specify pixel dimensions explicitly**: Use `NSBitmapImageRep(pixelsWide:pixelsHigh:...)` instead of `NSImage(size:)` to target exact pixel counts (`NSImage` renders at @2x resolution on Retina displays).
+2. **Specify pixel dimensions explicitly**: Use `NSBitmapImageRep(pixelsWide:pixelsHigh:...)` instead
+   of `NSImage(size:)` to target exact pixel counts (`NSImage` renders at @2x on Retina displays).
 
 3. **Run the script to update assets** from the project root:
+
    ```bash
    swift scripts/generate_icon.swift
    ```
 
 4. **Regenerate the project with XcodeGen** after adding or modifying `.xcassets`:
+
    ```bash
    xcodegen generate
    ```
@@ -144,12 +154,14 @@ App icons and other image assets are generated via **Swift scripts using AppKit*
 
 ### Consistency with Design Tokens
 
-Colors and sizes used in scripts must match the token values (numeric) defined in `TOKENS.md`. For example, define constants for the accent color (#007AFF) and corner radii so that design changes can be applied in a single place.
+Colors and sizes used in scripts must match the token values (numeric) defined in `TOKENS.md`.
+For example, define constants for the accent color (#007AFF) and corner radii so that design
+changes can be applied in a single place.
 
 ### Reference Implementation
 
 | Script | Generated asset | Output path |
-|---|---|---|
+| --- | --- | --- |
 | `scripts/generate_icon.swift` | App icon 1024×1024 | `Repeto/Assets.xcassets/AppIcon.appiconset/AppIcon.png` |
 
 ## 6. Installing to a Physical Device
@@ -169,7 +181,8 @@ All of the following must be in place before installing to a device. If anything
 xcrun devicectl list devices
 ```
 
-Use the `Identifier` value (UUID format) of the device showing `State: connected`. Note that the destination ID required by `xcodebuild` may differ; confirm with:
+Use the `Identifier` value (UUID format) of the device showing `State: connected`.
+Note that the destination ID required by `xcodebuild` may differ; confirm with:
 
 ```bash
 xcodebuild -project Repeto.xcodeproj -scheme Repeto -showdestinations 2>/dev/null | grep 'platform:iOS,'
@@ -220,7 +233,8 @@ Before beginning any work, present an **implementation plan** covering the follo
 
 ### Responding to Feedback
 
-If a build error or test failure occurs, analyze the root cause and attempt to fix it autonomously. Only escalate to a human when the fix is beyond your capability.
+If a build error or test failure occurs, analyze the root cause and attempt to fix it autonomously.
+Only escalate to a human when the fix is beyond your capability.
 
 ## Pre-Commit Checklist
 
