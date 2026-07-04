@@ -14,7 +14,7 @@ final class TaskServiceTests: XCTestCase {
     var taskService: TaskService?
     var container: NSPersistentContainer?
 
-    override func setUpWithError() throws {
+    override func setUp() async throws {
         guard let modelURL = Bundle(for: TaskService.self).url(
             forResource: "Repeto",
             withExtension: "momd"
@@ -47,7 +47,7 @@ final class TaskServiceTests: XCTestCase {
         self.taskService = TaskService(context: container.viewContext)
     }
 
-    override func tearDownWithError() throws {
+    override func tearDown() async throws {
         if let container = container {
             for store in container.persistentStoreCoordinator.persistentStores {
                 try? container.persistentStoreCoordinator.remove(store)
