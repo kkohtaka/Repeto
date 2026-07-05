@@ -13,6 +13,8 @@ struct TaskFormView: View {
     @State private var viewModel: TaskFormViewModel
     @State private var showError = false
     @State private var errorMessage: String?
+    // Scales with Dynamic Type so the interval field does not clip at larger text sizes.
+    @ScaledMetric(relativeTo: .body) private var intervalFieldWidth: CGFloat = 80
 
     init(context: NSManagedObjectContext, task: Task? = nil) {
         _viewModel = State(wrappedValue: TaskFormViewModel(context: context, task: task))
@@ -66,7 +68,7 @@ struct TaskFormView: View {
             HStack {
                 TextField("インターバル", text: $viewModel.intervalDays)
                     .keyboardType(.numberPad)
-                    .frame(width: 80)
+                    .frame(width: intervalFieldWidth)
                 Text("日ごと")
                     .foregroundStyle(.secondary)
             }

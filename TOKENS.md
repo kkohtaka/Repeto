@@ -7,9 +7,12 @@ All color, spacing, and radius values in Swift code and asset generation scripts
 
 ### Accent
 
-| Token | Value | Usage |
-| --- | --- | --- |
-| `accent` | `#007AFF` (iOS system blue) | Primary action buttons, icons |
+The single source of truth is the `AccentColor` asset in `Repeto/Assets.xcassets`.
+`DesignSystem.accent` (and `.accent` in views) resolves to it via `Color.accentColor`.
+
+| Token | Light | Dark | Usage |
+| --- | --- | --- | --- |
+| `accent` | `#007AFF` (iOS system blue) | `#0A84FF` | Primary action buttons, icons |
 
 ### Task Status
 
@@ -68,20 +71,28 @@ Follow iOS Human Interface Guidelines. Use system fonts at system-defined sizes.
 
 ## Usage in Swift
 
-Design tokens are applied via the `DesignSystem` extension:
+Design tokens are applied through the `DesignSystem` enum and the semantic
+`Color` extensions defined in `Repeto/Utilities/DesignSystem.swift`:
 
 ```swift
 // Spacing
-.padding(.designSystem(.spacing(.md)))       // 16pt
-.padding(.designSystem(.spacing(.lg)))       // 20pt
+.padding(DesignSystem.spacing(.md))            // 16pt
+VStack(spacing: DesignSystem.spacing(.lg)) { } // 20pt
 
-// Colors
-.foregroundStyle(.designSystem(.status(.overdue)))
-.foregroundStyle(.designSystem(.accent))
+// Status / semantic colors
+.foregroundStyle(DesignSystem.statusColor(.overdue))
+.foregroundStyle(.accent)                       // AccentColor asset
+.foregroundStyle(.destructive)
+
+// Icon size
+.font(.system(size: DesignSystem.iconSize(.lg)))
 
 // Corner radius
-.cornerRadius(.designSystem(.radius(.md)))   // 12pt
+.cornerRadius(DesignSystem.radius(.md))         // 12pt
 ```
 
-> **Note**: The `DesignSystem` extension is defined in `Repeto/Utilities/DesignSystem.swift`.
-> When adding new tokens, update both this file and the Swift implementation simultaneously.
+> **Note**: When adding new tokens, update both this file and the Swift
+> implementation simultaneously.
+>
+> **Enforcement**: `.swiftlint.yml` `custom_rules` flag hardcoded frame sizes and
+> raw color literals in views, so token usage is checked in CI, not just by convention.

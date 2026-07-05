@@ -72,5 +72,28 @@ nesting:
   statement_level:
     warning: 5
 
+# Custom rules: enforce design tokens (see TOKENS.md).
+# These make the "no hardcoded values" guardrail machine-checkable instead of
+# documentation-only. DesignSystem.swift and the asset catalog are the single
+# source of truth, so token definitions themselves are excluded.
+custom_rules:
+  no_hardcoded_frame_size:
+    name: "Hardcoded frame size"
+    regex: '\.frame\(\s*(width|height):\s*[0-9]'
+    message: "Avoid hardcoded frame sizes. Use a DesignSystem token or an @ScaledMetric value (see TOKENS.md)."
+    severity: warning
+  no_raw_tint_color:
+    name: "Raw tint color"
+    regex: '\.tint\(\s*\.(blue|red|green|orange|yellow|pink|purple|gray|mint|teal|indigo|brown|cyan)\b'
+    message: "Avoid raw system colors for .tint. Use a semantic token such as .accent / .destructive (see TOKENS.md)."
+    severity: warning
+    excluded: ".*DesignSystem\\.swift"
+  no_raw_color_component:
+    name: "Raw color from components"
+    regex: 'Color\(\s*(red|hue|hex):'
+    message: "Avoid building colors from raw components in views. Define the color as a token in DesignSystem.swift or the asset catalog (see TOKENS.md)."
+    severity: warning
+    excluded: ".*DesignSystem\\.swift"
+
 # Custom reporter (optional)
 reporter: "xcode"
