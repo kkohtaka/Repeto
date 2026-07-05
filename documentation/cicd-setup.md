@@ -236,6 +236,12 @@ PRに`firebase-preview`ラベルを付けることで、Ad HocビルドをFireba
 - Safariブラウザで再度試す（他のブラウザでは失敗する場合がある）
 - デバイスを再起動して再試行
 
+### 動作確認履歴
+
+| 日付 | 確認内容 |
+| --- | --- |
+| 2026-07-05 | `firebase-preview`ラベルによるAd Hocビルド〜Firebase配信のエンドツーエンド動作を確認 |
+
 ---
 
 ## TestFlight配信
