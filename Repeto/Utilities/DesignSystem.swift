@@ -45,7 +45,8 @@ enum DesignSystem {
 }
 
 extension ShapeStyle where Self == Color {
-    /// Single source of truth is the `AccentColor` asset (#007AFF light / #0A84FF dark).
-    static var accent: Color { Color.accentColor }
+    // `accent` is generated automatically from the `AccentColor` asset
+    // (#007AFF light / #0A84FF dark) via Xcode's asset symbols, so it must not
+    // be redeclared here. The asset catalog is the single source of truth.
     static var destructive: Color { .red }
 }
