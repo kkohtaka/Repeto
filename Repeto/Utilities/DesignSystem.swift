@@ -45,6 +45,7 @@ enum DesignSystem {
 }
 
 extension ShapeStyle where Self == Color {
-    static var accent: Color { .blue }
+    /// Single source of truth is the `AccentColor` asset (#007AFF light / #0A84FF dark).
+    static var accent: Color { Color.accentColor }
     static var destructive: Color { .red }
 }

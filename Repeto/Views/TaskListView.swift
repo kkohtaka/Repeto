@@ -135,7 +135,7 @@ struct TaskListView: View {
                 } label: {
                     Label("編集", systemImage: "pencil")
                 }
-                .tint(.blue)
+                .tint(.accent)
             }
     }
 
