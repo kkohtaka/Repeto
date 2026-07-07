@@ -33,6 +33,7 @@ xcodegen generate
 ```bash
 brew install xcodegen
 xcodegen generate
+./scripts/setup-hooks.sh   # enable the pre-commit guardrail checks (.githooks)
 ```
 
 ### Adding New Files
@@ -96,7 +97,12 @@ For UI automation (screenshots, taps, etc.), use the `ui-automation:*` tools.
 #### Navigation and Screen Changes
 
 When making any of the following changes, update `docs/transitions.mmd` **in the same commit**.
-Omissions are also detected by the Git pre-commit hook.
+Omissions are detected by the tracked pre-commit hook (`.githooks/pre-commit`, enabled via
+`./scripts/setup-hooks.sh`) and by the `UX Guardrails` CI job. Both run
+`scripts/guardrails-check.sh`, which fails when a screen `View` is added, removed, or renamed
+without a matching `docs/transitions.mmd` update, and when the diagram references a screen whose
+file no longer exists. It also emits advisory warnings for interactive/icon elements missing an
+`accessibilityLabel`.
 
 | Type of change | Example |
 | --- | --- |

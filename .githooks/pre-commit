@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+#
+# Repeto pre-commit hook — runs UX/design guardrail checks on staged changes.
+# Enable with: git config core.hooksPath .githooks  (or run scripts/setup-hooks.sh)
+#
+set -euo pipefail
+
+repo_root="$(git rev-parse --show-toplevel)"
+exec "$repo_root/scripts/guardrails-check.sh" --staged
