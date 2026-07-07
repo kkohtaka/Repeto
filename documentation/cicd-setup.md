@@ -28,6 +28,18 @@ SwiftLint通過後、自動的にビルドが実行されます。
 - **ターゲット**: iOS Simulator
 - **コード署名**: 無効（CI環境のため）
 
+### UXガードレール（UX Guardrails）
+
+PRおよびmainブランチへのpush時に、画面遷移ドキュメントとの同期を検証します。
+
+- **ワークフロー**: `.github/workflows/linters.yml`（`guardrails` ジョブ）
+- **スクリプト**: `scripts/guardrails-check.sh`（ローカルの `.githooks/pre-commit` と共用）
+- **検証内容**:
+  - 画面 `View` の追加・削除・リネーム時に `docs/transitions.mmd` が更新されているか（未更新なら失敗）
+  - `docs/transitions.mmd` が参照する画面のファイルが存在するか（リネーム/削除漏れの検出）
+  - `accessibilityLabel` 欠落の警告（アドバイザリ、ビルドは失敗しない）
+- **ローカル有効化**: `./scripts/setup-hooks.sh`（`git config core.hooksPath .githooks`）
+
 ---
 
 ## GitHub Secretsの設定
