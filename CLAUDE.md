@@ -576,6 +576,28 @@ Renovate Bot automatically manages dependency updates:
 3. Review changelog for breaking changes
 4. Merge if everything looks good
 
+## Agent Skills (APM)
+
+The Claude Code skills under `.claude/skills/` — `commit`, `create-pr`, `create-issue`, and
+`debug-ci` — are **APM-managed** and deployed from the shared package
+[kkohtaka/agent-skills](https://github.com/kkohtaka/agent-skills).
+
+- **Do not hand-edit these skill directories.** Changes go to the package repo; then bump the
+  version pin in `apm.yml` and reinstall.
+- `apm.yml` declares the dependency (pinned to a tag), and `apm.lock.yaml` pins content hashes.
+  Both are committed. `apm_modules/` is gitignored.
+- To upgrade: bump the tag in `apm.yml`, run `apm install --target claude`, and commit the
+  lockfile diff along with the updated skill files.
+
+```bash
+brew install microsoft/apm/apm   # if not installed
+apm install --target claude      # deploy skills to .claude/skills/
+```
+
+The former repo-local `.claude/commands/pr.md` was retired in favor of the shared `create-pr`
+skill to avoid two competing PR workflows. Project-specific pre-PR checks (linters, build,
+tests, documentation sync) remain defined in this file's Pre-Commit Checklist.
+
 ## Important Notes
 
 - Be cautious with Core Data model changes (migration required)

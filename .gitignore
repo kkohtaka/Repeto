@@ -144,3 +144,6 @@ Repeto.xcodeproj/
 
 # XcodeBuildMCP - local session defaults (contains absolute paths)
 .xcodebuildmcp/
+
+# APM dependencies
+apm_modules/
