@@ -15,6 +15,8 @@ struct TaskListView: View {
     @State private var showingEditForm = false
     @State private var taskToEdit: Task?
     @State private var hapticTrigger = false
+    // Scales the empty-state icon with Dynamic Type instead of using a fixed point size.
+    @ScaledMetric(relativeTo: .largeTitle) private var emptyStateIconSize: CGFloat = DesignSystem.iconSize(.lg)
 
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \Task.nextReminderAt, ascending: true)],
@@ -72,8 +74,9 @@ struct TaskListView: View {
     private var emptyStateView: some View {
         VStack(spacing: DesignSystem.spacing(.lg)) {
             Image(systemName: "checkmark.circle")
-                .font(.system(size: DesignSystem.iconSize(.lg)))
+                .font(.system(size: emptyStateIconSize))
                 .foregroundStyle(.accent)
+                .accessibilityHidden(true)
 
             Text("タスクがありません")
                 .font(.title2)
@@ -192,4 +195,11 @@ struct TaskListView: View {
 
     return TaskListView()
         .environment(\.managedObjectContext, context)
+}
+
+#Preview("Empty State - Dark / Accessibility Text") {
+    TaskListView()
+        .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+        .preferredColorScheme(.dark)
+        .dynamicTypeSize(.accessibility3)
 }
