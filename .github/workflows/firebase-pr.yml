@@ -133,8 +133,16 @@ jobs:
           PR_NUMBER=${{ github.event.pull_request.number }}
           BUILD_NUMBER=$((2000000 + PR_NUMBER))
 
-          # Get marketing version
-          MARKETING_VERSION=$(agvtool what-marketing-version -terse1)
+          # Get marketing version.
+          # NOTE: `agvtool what-marketing-version` returns an empty string for
+          # XcodeGen-generated projects because MARKETING_VERSION is defined in
+          # the build settings, not in the .pbxproj versioning keys agvtool
+          # reads. Read it from resolved build settings instead.
+          MARKETING_VERSION=$(xcodebuild -project Repeto.xcodeproj -scheme Repeto -showBuildSettings 2>/dev/null | awk -F' = ' '/ MARKETING_VERSION = /{print $2; exit}')
+          if [ -z "$MARKETING_VERSION" ]; then
+            echo "❌ Error: Could not determine MARKETING_VERSION from build settings"
+            exit 1
+          fi
           VERSION_STRING="${MARKETING_VERSION}-pr.${PR_NUMBER}"
 
           echo "BUILD_NUMBER=$BUILD_NUMBER" >> "$GITHUB_OUTPUT"
