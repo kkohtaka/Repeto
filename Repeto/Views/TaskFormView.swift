@@ -32,9 +32,13 @@ struct TaskFormView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("キャンセル") { dismiss() }
+                        .accessibilityLabel("キャンセル")
+                        .accessibilityHint("編集を破棄して閉じます")
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button(viewModel.saveButtonTitle) { saveTask() }
+                        .accessibilityLabel(viewModel.saveButtonTitle)
+                        .accessibilityHint("入力内容を保存します")
                 }
             }
             .alert("エラー", isPresented: $showError) {
@@ -51,6 +55,8 @@ struct TaskFormView: View {
         Section {
             TextField("タスク名", text: $viewModel.name)
                 .textInputAutocapitalization(.never)
+                .accessibilityLabel("タスク名")
+                .accessibilityHint("繰り返したいタスクの名前を入力します")
             if let error = viewModel.nameError {
                 Text(error)
                     .font(.caption)
@@ -69,6 +75,8 @@ struct TaskFormView: View {
                 TextField("インターバル", text: $viewModel.intervalDays)
                     .keyboardType(.numberPad)
                     .frame(width: intervalFieldWidth)
+                    .accessibilityLabel("インターバル")
+                    .accessibilityHint("タスクを繰り返す間隔を日数で入力します")
                 Text("日ごと")
                     .foregroundStyle(.secondary)
             }
@@ -92,6 +100,8 @@ struct TaskFormView: View {
                 displayedComponents: [.date, .hourAndMinute]
             )
             .datePickerStyle(.compact)
+            .accessibilityLabel("次回リマインド日時")
+            .accessibilityHint("次回のリマインド通知日時を設定します")
         } header: {
             Text("次回リマインド日時")
         } footer: {
@@ -125,4 +135,10 @@ struct TaskFormView: View {
     task.nextReminderAt = Date()
     task.createdAt = Date()
     return TaskFormView(context: context, task: task)
+}
+
+#Preview("Create - Dark / Accessibility Text") {
+    TaskFormView(context: PersistenceController.preview.container.viewContext)
+        .preferredColorScheme(.dark)
+        .dynamicTypeSize(.accessibility3)
 }
