@@ -2,11 +2,26 @@
 flowchart TD
     Start([App Launch]) --> TaskListView
 
-    TaskListView -->|"+ (Add Task)"| TaskFormView_Create["TaskFormView\n(create mode)"]
-    TaskListView -->|"Edit (swipe action)"| TaskFormView_Edit["TaskFormView\n(edit mode)"]
+    TaskListView -->|"+ (Add Task) — route .create"| TaskFormView_Create["TaskFormView\n(create mode)"]
+    TaskListView -->|"Edit (swipe action) — route .edit(Task)"| TaskFormView_Edit["TaskFormView\n(edit mode)"]
 
     TaskFormView_Create -->|"Cancel"| TaskListView
     TaskFormView_Create -->|"Save"| TaskListView
 
     TaskFormView_Edit -->|"Cancel"| TaskListView
     TaskFormView_Edit -->|"Save"| TaskListView
+
+    %% In-screen actions (no screen transition)
+    TaskListView -->|"Row tap → complete task"| TaskListView
+    TaskListView -->|"Swipe → Delete"| TaskListView
+    TaskListView -->|"On error → alert (エラー)"| TaskListView
+
+    TaskFormView_Create -->|"On save error → alert (エラー)"| TaskFormView_Create
+    TaskFormView_Edit -->|"On save error → alert (エラー)"| TaskFormView_Edit
+
+%% Notes:
+%% - Both TaskFormView presentations are driven by a single .sheet(item:) bound to
+%%   the private TaskFormRoute enum in TaskListView.swift (.create / .edit(Task)).
+%% - Row tap completes the task in place (haptic + spring animation); it does not navigate.
+%% - Swipe actions on a row expose Delete (destructive) and Edit.
+%% - The エラー alerts are in-screen and dismiss back to the same screen via OK.

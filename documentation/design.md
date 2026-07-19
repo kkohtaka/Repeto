@@ -88,6 +88,29 @@ ios/Repeto/
 - **今日**: オレンジ色で表示
 - **今後**: 通常表示
 
+### ナビゲーション
+
+- ルートは `TaskListView` の **`NavigationStack`**（iOS 16 で非推奨となった `NavigationView` は使用しない）。
+  `TaskFormView` もシート内で独自の `NavigationStack` を持ち、ツールバーの
+  キャンセル / 保存ボタンを配置する。
+- タスク作成 / 編集は **単一の `.sheet(item:)`** で提示する。提示状態は
+  `TaskListView.swift` 内の private な軽量ルート enum で表現する:
+
+  ```swift
+  private enum TaskFormRoute: Identifiable {
+      case create
+      case edit(Task)
+  }
+  ```
+
+  `.create` / `.edit(Task)` を `@State private var formRoute: TaskFormRoute?` に代入することで
+  提示・破棄を行う。以前の `showingTaskForm` / `showingEditForm` / `taskToEdit` の
+  3 フラグ構成は廃止した（フラグ間の不整合状態を型で排除するため）。
+  `Identifiable` の `id` は `.create` が固定文字列、`.edit` が
+  `objectID.uriRepresentation()` を用いる。
+- フル Coordinator パターンは採用しない（画面数が少なく過剰なため）。
+- 画面遷移の全体像は `docs/transitions.mmd` を参照（実装と同期させること）。
+
 ---
 
 ## 画面設計

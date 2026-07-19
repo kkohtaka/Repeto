@@ -21,7 +21,7 @@ struct TaskFormView: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Form {
                 taskNameSection
                 intervalSection
