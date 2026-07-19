@@ -8,12 +8,27 @@
 import CoreData
 import SwiftUI
 
+/// The task form can be presented in one of two modes. Modelling them as a single
+/// route lets one `.sheet(item:)` drive both, instead of a separate `Bool` flag per mode.
+private enum TaskFormRoute: Identifiable {
+    case create
+    case edit(Task)
+
+    var id: String {
+        switch self {
+        case .create:
+            "create"
+        case .edit(let task):
+            // Stable across the sheet's lifetime, and distinct per task.
+            task.objectID.uriRepresentation().absoluteString
+        }
+    }
+}
+
 struct TaskListView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @State private var viewModel: TaskListViewModel
-    @State private var showingTaskForm = false
-    @State private var showingEditForm = false
-    @State private var taskToEdit: Task?
+    @State private var formRoute: TaskFormRoute?
     @State private var hapticTrigger = false
     // Scales the empty-state icon with Dynamic Type instead of using a fixed point size.
     @ScaledMetric(relativeTo: .largeTitle) private var emptyStateIconSize: CGFloat = DesignSystem.iconSize(.lg)
@@ -31,7 +46,7 @@ struct TaskListView: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Group {
                 if tasks.isEmpty {
                     emptyStateView
@@ -44,18 +59,18 @@ struct TaskListView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        showingTaskForm = true
+                        formRoute = .create
                     } label: {
                         Image(systemName: "plus")
                     }
                     .accessibilityLabel("タスクを追加")
                 }
             }
-            .sheet(isPresented: $showingTaskForm) {
-                TaskFormView(context: viewContext)
-            }
-            .sheet(isPresented: $showingEditForm) {
-                if let task = taskToEdit {
+            .sheet(item: $formRoute) { route in
+                switch route {
+                case .create:
+                    TaskFormView(context: viewContext)
+                case .edit(let task):
                     TaskFormView(context: viewContext, task: task)
                 }
             }
@@ -156,8 +171,7 @@ struct TaskListView: View {
     }
 
     private func editTask(_ task: Task) {
-        taskToEdit = task
-        showingEditForm = true
+        formRoute = .edit(task)
     }
 }
 
