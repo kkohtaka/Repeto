@@ -9,7 +9,10 @@ import CoreData
 import SwiftUI
 
 struct TaskRowView: View {
-    let task: Task
+    // Observed, not a plain reference: @FetchRequest only re-emits when the result set or its
+    // order changes, so editing a field that is not the sort key (e.g. intervalDays) would
+    // otherwise leave the row rendering stale values.
+    @ObservedObject var task: Task
 
     var body: some View {
         VStack(alignment: .leading, spacing: DesignSystem.spacing(.xs)) {
