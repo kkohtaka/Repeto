@@ -327,9 +327,12 @@ Repeto/
 
 ### Writing Rules
 
-1. **Subject**: Max 50 chars, imperative mood, no period
+1. **Subject**: 50 chars recommended, 72 chars hard limit; imperative mood, no period.
+   The scope is part of this project's format and is **not** optional-by-default — prefer
+   `feat(service): ...` over a bare `feat: ...` when a scope applies.
 2. **Body**: Wrap at 72 chars, explain **why** not what, use bullet points
-3. **Footer**: Note breaking changes, reference issues (`Closes #123`)
+3. **Footer**: Note breaking changes, reference issues (`Closes #123` or `Fixes #123`).
+   A `Co-Authored-By: Claude <model-name>` trailer added by the `commit` skill is permitted.
 
 ### Example
 
@@ -438,10 +441,19 @@ See `documentation/cicd-setup.md` for detailed information.
 
 ## GitHub Operations (Claude Code on Web)
 
+> **Scope note.** This section is a **fallback for the Claude Code on Web environment**, where
+> `gh` may be unavailable or restricted. It is not a blanket ban on `gh`.
+>
+> - **Locally (macOS, `gh` authenticated)** — use `gh` as the shared skills prescribe
+>   (`gh pr create --draft`, `gh run list`, `gh pr checks`, `gh issue comment`).
+> - **On the web, or wherever `gh` fails** — use the `curl` / Python recipes below.
+>
+> Check with `gh auth status` if unsure which applies.
+
 ### Creating Pull Requests
 
-**IMPORTANT**: Always use `curl` with GitHub REST API instead of `gh pr create`, as `gh` commands
-may be restricted.
+In the web environment, use `curl` with the GitHub REST API instead of `gh pr create`, as `gh`
+commands may be restricted.
 
 ```bash
 curl -s -X POST \
@@ -480,8 +492,9 @@ curl -s -X PATCH \
 
 ### Check Workflow Runs for a Branch
 
-**IMPORTANT**: Due to environment variable expansion issues in Bash tool, use Python scripts
-with subprocess to call curl for reliable GitHub API access.
+**IMPORTANT**: In the web environment, due to environment variable expansion issues in the Bash
+tool, use Python scripts with subprocess to call curl for reliable GitHub API access. Locally,
+prefer the `debug-ci` skill's `gh run list` / `gh run view --log-failed` / `gh pr checks`.
 
 ```bash
 python3 << 'PYEOF'
@@ -603,6 +616,37 @@ apm install --target claude      # deploy skills to .claude/skills/
 The former repo-local `.claude/commands/pr.md` was retired in favor of the shared `create-pr`
 skill to avoid two competing PR workflows. Project-specific pre-PR checks (linters, build,
 tests, documentation sync) remain defined in this file's Pre-Commit Checklist.
+
+### Precedence: CLAUDE.md vs. the APM-managed skills
+
+The shared skills are written for many repositories and cannot encode this project's
+requirements. When the two sources disagree:
+
+> **`CLAUDE.md` wins for repository-specific policy; the skills own their procedural mechanics.**
+
+Concretely:
+
+| Topic | Authority | Rule |
+| --- | --- | --- |
+| Branch naming | **CLAUDE.md** | `claude/<feature-name>-{session-id}` is required — push automation depends on it |
+| Commit message format | **CLAUDE.md** | Conventional Commits **with scope** (see "Commit Message Guidelines") |
+| Push retry policy | **CLAUDE.md** | 4 retries with exponential backoff (see "Git Operations") |
+| Pre-PR validation | **CLAUDE.md** | The Pre-Commit Checklist in this file |
+| PR body structure, draft-first flow | **Skill** | `create-pr` |
+| CI log retrieval steps | **Skill** | `debug-ci` |
+| Issue template structure | **Skill** | `create-issue` |
+
+**Branch-naming override.** The `commit` and `create-pr` skills open with a step that re-creates
+the branch under a `feat/` / `fix/` / `refactor/` / `docs/` / `chore/` / `ci/` prefix when the
+current branch name "does not describe the work". **Skip that step whenever the current branch
+already matches `claude/*`** — such a branch is correct by this project's convention, not a
+mis-named one. Renaming away from `claude/*` breaks the push rules in "Git Operations".
+
+**`Co-Authored-By` trailer.** The skills append a `Co-Authored-By: Claude <model-name>` trailer.
+This is **permitted** in this project. Note that with Squash & Merge the trailer becomes part of
+the commit message on `main`; that is accepted and intentional.
+
+**`Closes` vs `Fixes`.** Both keywords close the referenced issue on merge. Either is acceptable.
 
 ## Important Notes
 
