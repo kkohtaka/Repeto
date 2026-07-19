@@ -309,45 +309,14 @@ Repeto/
 
 ## Commit Message Guidelines
 
-### Format
+The commit message format is defined by the `commit` skill (Conventional Commits). Only the
+project-specific additions are recorded here:
 
-```text
-<type>(<scope>): <subject>
-
-<body>
-
-<footer>
-```
-
-### Types and Scopes
-
-**Types:** `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `ci`
-
-**Scopes (optional):** `core-data`, `ui`, `service`, `viewmodel`, `workflow`, `docs`
-
-### Writing Rules
-
-1. **Subject**: 50 chars recommended, 72 chars hard limit; imperative mood, no period.
-   The scope is part of this project's format and is **not** optional-by-default — prefer
-   `feat(service): ...` over a bare `feat: ...` when a scope applies.
-2. **Body**: Wrap at 72 chars, explain **why** not what, use bullet points
-3. **Footer**: Note breaking changes, reference issues (`Closes #123` or `Fixes #123`).
-   A `Co-Authored-By: Claude <model-name>` trailer added by the `commit` skill is permitted.
-
-### Example
-
-```text
-feat(service): Implement interval calculation logic
-
-Add logic to calculate next reminder date based on task interval:
-- Support for daily, weekly, and monthly intervals
-- Handle edge cases (month-end dates, leap years)
-- Unit tests with 95% coverage
-
-Related to #20
-```
-
-**Note:** When using Squash & Merge, commit messages become PR title and description.
+- **Scope**: add one when it applies — `<type>(<scope>): <subject>`.
+  Scopes in use: `core-data`, `ui`, `service`, `viewmodel`, `workflow`, `docs`.
+- **`style` type**: allowed in addition to the skill's type list, for formatting-only changes.
+- **Squash & Merge**: commit messages become the PR title and description, so write them to read
+  well on `main`.
 
 ## Common Workflows
 
@@ -439,113 +408,39 @@ See `documentation/cicd-setup.md` for detailed information.
 - `APPLE_ADHOC_CERTIFICATE_PASSWORD`
 - `APPLE_ADHOC_PROVISION_PROFILE_BASE64`
 
-## GitHub Operations (Claude Code on Web)
+## GitHub Operations
 
-> **Scope note.** This section is a **fallback for the Claude Code on Web environment**, where
-> `gh` may be unavailable or restricted. It is not a blanket ban on `gh`.
->
-> - **Locally (macOS, `gh` authenticated)** — use `gh` as the shared skills prescribe
->   (`gh pr create --draft`, `gh run list`, `gh pr checks`, `gh issue comment`).
-> - **On the web, or wherever `gh` fails** — use the `curl` / Python recipes below.
->
-> Check with `gh auth status` if unsure which applies.
+Use `gh` as the primary tool — creating PRs (`create-pr` skill), investigating CI (`debug-ci`
+skill), and issue/PR management are all covered there.
 
-### Creating Pull Requests
+**Fallback when `gh` is unavailable or restricted** (as it may be in Claude Code on Web): call the
+GitHub REST API directly against `https://api.github.com/repos/kkohtaka/Repeto`, using
+`Authorization: token $GITHUB_TOKEN`. The endpoints needed most often are:
 
-In the web environment, use `curl` with the GitHub REST API instead of `gh pr create`, as `gh`
-commands may be restricted.
+| Purpose | Endpoint |
+| --- | --- |
+| Create a PR | `POST /pulls` (`title`, `head`, `base` required) |
+| Merge / close a PR | `PUT /pulls/{n}/merge` (`{"merge_method":"squash"}`) / `PATCH /pulls/{n}` |
+| Workflow runs for a branch | `GET /actions/runs?branch={branch}` |
+| Jobs and failed steps | `GET /actions/runs/{run_id}/jobs` |
 
-```bash
-curl -s -X POST \
-  -H "Authorization: token $GITHUB_TOKEN" \
-  -H "Accept: application/vnd.github.v3+json" \
-  "https://api.github.com/repos/kkohtaka/Repeto/pulls" \
-  -d @- <<'EOF'
-{
-  "title": "feat(service): Add new feature",
-  "head": "feature-branch-name",
-  "base": "main",
-  "body": "## Summary\n\nDetailed description...\n\n## Changes\n\n- Change 1\n- Change 2"
-}
-EOF
-```
-
-**Key fields:** `title` (required), `head` (required), `base` (required), `body` (optional)
-
-### Managing Pull Requests
-
-```bash
-# Merge PR using squash method
-curl -s -X PUT \
-  -H "Authorization: token $GITHUB_TOKEN" \
-  -H "Accept: application/vnd.github.v3+json" \
-  "https://api.github.com/repos/kkohtaka/Repeto/pulls/{PR_NUMBER}/merge" \
-  -d '{"merge_method":"squash"}'
-
-# Close PR without merging
-curl -s -X PATCH \
-  -H "Authorization: token $GITHUB_TOKEN" \
-  -H "Accept: application/vnd.github.v3+json" \
-  "https://api.github.com/repos/kkohtaka/Repeto/pulls/{PR_NUMBER}" \
-  -d '{"state":"closed"}'
-```
-
-### Check Workflow Runs for a Branch
-
-**IMPORTANT**: In the web environment, due to environment variable expansion issues in the Bash
-tool, use Python scripts with subprocess to call curl for reliable GitHub API access. Locally,
-prefer the `debug-ci` skill's `gh run list` / `gh run view --log-failed` / `gh pr checks`.
-
-```bash
-python3 << 'PYEOF'
-import os
-import subprocess
-import json
-
-token = os.environ.get('GITHUB_TOKEN', '')
-
-result = subprocess.run(
-    ['curl', '-s', '-H', f'Authorization: token {token}',
-     '-H', 'Accept: application/vnd.github.v3+json',
-     'https://api.github.com/repos/kkohtaka/Repeto/actions/runs?branch=main&per_page=5'],
-    capture_output=True,
-    text=True
-)
-
-data = json.loads(result.stdout)
-runs = data.get('workflow_runs', [])
-print(f"Found {len(runs)} workflow runs\n")
-for run in runs:
-    print(f"- {run['name']}: {run['status']} / {run.get('conclusion', 'running')}")
-    print(f"  URL: {run['html_url']}")
-PYEOF
-```
-
-**Response fields:**
-
-- `status`: "queued", "in_progress", "completed"
-- `conclusion`: "success", "failure", "cancelled", "skipped"
-- `html_url`: Link to workflow run on GitHub
-
-**For detailed job analysis**, replace the API endpoint with:
-
-- `/actions/runs/{run_id}` - Specific workflow run
-- `/actions/runs/{run_id}/jobs` - Jobs and failed steps
-- `/pulls/{pr_number}` - PR status and mergeability
-
-**Common errors:**
-
-- `401 Unauthorized`: Token missing or expired
-- `403 Forbidden`: Token lacks required permissions
-- `404 Not Found`: Repository, branch, or run doesn't exist
+If `$GITHUB_TOKEN` fails to expand inside a shell heredoc, invoke `curl` from a `python3` script
+via `subprocess` and read the token with `os.environ`.
 
 ## Git Operations
 
 ### Git Push
 
 - Always use `git push -u origin <branch-name>`
-- Branch must start with 'claude/' and end with matching session id
+- Branch must start with `claude/` and end with the matching session id
 - Retry up to 4 times with exponential backoff (2s, 4s, 8s, 16s) on network errors
+
+> **This branch-naming rule overrides the skills.** The `commit` and `create-pr` skills open with
+> a step that re-creates the branch under a `feat/` / `fix/` / `refactor/` / `docs/` / `chore/` /
+> `ci/` name when the current one "does not describe the work". **Skip that step while on a
+> `claude/*` branch** — the name is required by the environment's push rules, not a mis-named
+> branch. This is the one place where this file deliberately contradicts the skills; everywhere
+> else, follow the skills.
 
 ### Git Fetch/Pull
 
@@ -617,36 +512,18 @@ The former repo-local `.claude/commands/pr.md` was retired in favor of the share
 skill to avoid two competing PR workflows. Project-specific pre-PR checks (linters, build,
 tests, documentation sync) remain defined in this file's Pre-Commit Checklist.
 
-### Precedence: CLAUDE.md vs. the APM-managed skills
+### Relationship to this file
 
-The shared skills are written for many repositories and cannot encode this project's
-requirements. When the two sources disagree:
+**The skills are the default; this file records only what is specific to this project.** Rather
+than restating the skills' procedures here and having the two drift apart, guidance that the
+skills already cover has been removed from this file. So:
 
-> **`CLAUDE.md` wins for repository-specific policy; the skills own their procedural mechanics.**
+- If this file is **silent** on something the skills cover, follow the skill.
+- If this file **adds** to a skill (commit scopes, pre-PR checks, documentation sync), do both.
+- If this file **contradicts** a skill, the only such case is the `claude/*` branch-naming rule
+  under "Git Operations", which is marked there explicitly.
 
-Concretely:
-
-| Topic | Authority | Rule |
-| --- | --- | --- |
-| Branch naming | **CLAUDE.md** | `claude/<feature-name>-{session-id}` is required — push automation depends on it |
-| Commit message format | **CLAUDE.md** | Conventional Commits **with scope** (see "Commit Message Guidelines") |
-| Push retry policy | **CLAUDE.md** | 4 retries with exponential backoff (see "Git Operations") |
-| Pre-PR validation | **CLAUDE.md** | The Pre-Commit Checklist in this file |
-| PR body structure, draft-first flow | **Skill** | `create-pr` |
-| CI log retrieval steps | **Skill** | `debug-ci` |
-| Issue template structure | **Skill** | `create-issue` |
-
-**Branch-naming override.** The `commit` and `create-pr` skills open with a step that re-creates
-the branch under a `feat/` / `fix/` / `refactor/` / `docs/` / `chore/` / `ci/` prefix when the
-current branch name "does not describe the work". **Skip that step whenever the current branch
-already matches `claude/*`** — such a branch is correct by this project's convention, not a
-mis-named one. Renaming away from `claude/*` breaks the push rules in "Git Operations".
-
-**`Co-Authored-By` trailer.** The skills append a `Co-Authored-By: Claude <model-name>` trailer.
-This is **permitted** in this project. Note that with Squash & Merge the trailer becomes part of
-the commit message on `main`; that is accepted and intentional.
-
-**`Closes` vs `Fixes`.** Both keywords close the referenced issue on merge. Either is acceptable.
+When adding to this file, prefer deleting a conflicting rule over adding an exception to it.
 
 ## Important Notes
 
