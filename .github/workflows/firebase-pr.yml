@@ -47,9 +47,14 @@ jobs:
       - name: Show Xcode version
         run: xcodebuild -version
 
-      - name: Download iOS platform
-        run: xcodebuild -downloadPlatform iOS
-        timeout-minutes: 30
+      # NOTE: No `xcodebuild -downloadPlatform iOS` step here on purpose.
+      # This job archives for `generic/platform=iOS` (a device build), which only
+      # needs the iOS device SDK bundled inside Xcode -- not a simulator runtime.
+      # The `archive-test` job in ci.yml performs the same device archive on the
+      # same runner image without downloading a platform, so the step was redundant.
+      # It was also intermittently flaky: on the first real run of this job it
+      # failed with "Unable to connect to simulator" (exit 70) and succeeded on a
+      # plain re-run of the same commit.
 
       - name: Install Apple Certificate and Provisioning Profile (Ad Hoc)
         env:
