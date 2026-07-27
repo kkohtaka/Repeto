@@ -1,0 +1,40 @@
+name: Setup Xcode
+description: >-
+  Selects the Xcode toolchain pinned by XCODE_VERSION in
+  .github/tool-versions.env, so every macOS job builds with the same
+  compiler and SDK.
+
+outputs:
+  version:
+    description: The Xcode version that was selected.
+    value: ${{ steps.select.outputs.version }}
+
+runs:
+  using: composite
+  steps:
+    - name: Select Xcode version
+      id: select
+      shell: bash
+      run: |
+        # shellcheck source=../../tool-versions.env
+        source "${GITHUB_WORKSPACE}/.github/tool-versions.env"
+
+        if [ -z "${XCODE_VERSION:-}" ]; then
+          echo "::error file=.github/tool-versions.env::XCODE_VERSION is not defined."
+          exit 1
+        fi
+
+        DEVELOPER_DIR="/Applications/Xcode_${XCODE_VERSION}.app/Contents/Developer"
+        if [ ! -d "$DEVELOPER_DIR" ]; then
+          echo "::error file=.github/tool-versions.env::Xcode ${XCODE_VERSION} is not installed on this runner image."
+          echo "Xcode versions available on this runner:"
+          ls -d /Applications/Xcode*.app 2>/dev/null || true
+          exit 1
+        fi
+
+        sudo xcode-select -s "$DEVELOPER_DIR"
+        echo "version=${XCODE_VERSION}" >> "$GITHUB_OUTPUT"
+
+    - name: Show Xcode version
+      shell: bash
+      run: xcodebuild -version

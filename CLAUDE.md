@@ -113,6 +113,18 @@ file no longer exists. It also emits advisory warnings for interactive/icon elem
 
 If documentation updates are not required (e.g., style fixes, bug fixes, test additions), state so in the commit message.
 
+#### Xcode Toolchain (CI workflows)
+
+The Xcode version is pinned **once**, by `XCODE_VERSION` in `.github/tool-versions.env`. Every
+macOS job selects it with `uses: ./.github/actions/setup-xcode` — never hardcode
+`/Applications/Xcode_<version>.app` and never call `xcode-select -s` in a workflow. This keeps the
+toolchain that runs the tests identical to the one that builds the binaries we ship (Ad Hoc /
+TestFlight).
+
+`scripts/check-workflow-toolchain.sh` enforces this; it runs in the `Toolchain Consistency` CI job
+and from the pre-commit hook. To change the Xcode version, edit that one line in
+`.github/tool-versions.env`.
+
 #### Other Documentation
 
 **Always update when tasks are completed:**
