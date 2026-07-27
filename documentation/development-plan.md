@@ -45,7 +45,7 @@ Repeto（リピート）
 
 - **GitHub Actions**: 自動ビルド・TestFlight配信
 - **実行環境**: macOS 26 runners
-- **Xcode**: 26.0.1
+- **Xcode**: 26.4.1（`.github/tool-versions.env` の `XCODE_VERSION` で一元管理）
 
 ---
 

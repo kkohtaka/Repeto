@@ -24,9 +24,42 @@ PRおよびmainブランチへのpush時に自動的にSwiftLintが実行され�
 
 SwiftLint通過後、自動的にビルドが実行されます。
 
-- **環境**: macOS 26、Xcode 26.0.1
+- **環境**: macOS 26、Xcode 26.4.1（[Xcodeツールチェインの統一](#xcodeツールチェインの統一)を参照）
 - **ターゲット**: iOS Simulator
 - **コード署名**: 無効（CI環境のため）
+
+### Xcodeツールチェインの統一
+
+テストで検証したツールチェインと、実際に配布されるバイナリのツールチェインが食い違うと、
+コンパイラ/SDK差に起因する不具合がCIをすり抜けて配布ビルドで顕在化します。これを防ぐため、
+Xcodeバージョンは**1箇所で管理し、全macOSジョブがそこから読み込みます**。
+
+- **単一の管理場所**: `.github/tool-versions.env` の `XCODE_VERSION`
+- **選択方法**: 各ジョブは`uses: ./.github/actions/setup-xcode`（composite action）を使用する。
+  この action が `XCODE_VERSION` を読み込んで `xcode-select` を実行する
+- **対象ジョブ**: `ci.yml`（`build` / `archive-test`）、`firebase-pr.yml`（`build`）、
+  `testflight.yml`（`deploy`）
+
+バージョンを変更する場合は `.github/tool-versions.env` の1行のみを編集します
+（Renovateの`tools`ラベル運用と同じ流れです）。
+
+#### ドリフト防止チェック（Toolchain Consistency）
+
+`scripts/check-workflow-toolchain.sh`が、上記の仕組みが将来も崩れないことを検証します。
+以下のいずれかに該当すると**CIが失敗**します。
+
+1. `.github/tool-versions.env` に `XCODE_VERSION` が定義されていない
+2. ワークフロー/action が Xcodeバージョンを直書きしている（例: `/Applications/Xcode_26.0.1.app`）、
+   または `xcode-select -s` を直接呼んでいる
+3. macOSランナー上で `xcodebuild` を実行するジョブが `./.github/actions/setup-xcode` を使っていない
+   （＝ランナー既定のXcodeで暗黙にビルドされ、ドリフトする）
+
+- **ワークフロー**: `.github/workflows/linters.yml`（`toolchain` ジョブ）
+- **ローカル実行**: `scripts/check-workflow-toolchain.sh`（`.githooks/pre-commit` からも実行）
+
+また composite action 自体も、指定バージョンがランナーイメージに存在しない場合は
+インストール済みXcode一覧を出力して失敗します（イメージ更新でバージョンが削除された場合に、
+別バージョンへ暗黙にフォールバックせず即座に気付けるようにするため）。
 
 ### UXガードレール（UX Guardrails）
 
@@ -91,7 +124,7 @@ Renovate Botが以下の依存関係を自動的に管理します：
 
 - **GitHub Actions**: actions/checkout, actions/cache, actions/setup-node, actions/upload-artifact
 - **開発ツール**: `.github/tool-versions.env`内のツールバージョン
-  - actionlint, markdownlint-cli2, SwiftLint, gh, Node.js, shellcheck
+  - actionlint, markdownlint-cli2, SwiftLint, gh, Node.js, shellcheck, XcodeGen, Xcode
 
 ### 必要な設定
 
