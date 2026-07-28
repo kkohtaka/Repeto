@@ -268,6 +268,8 @@ Only escalate to a human when the fix is beyond your capability.
 
 - [ ] Add unit tests for new logic
 - [ ] Add documentation comments for public APIs
+- [ ] Verify comments describe current intent, not change history
+      (see "Comments" under Coding Standards)
 - [ ] Consider migration strategy for Core Data model changes
 
 ### 3. Documentation Updates
@@ -294,6 +296,25 @@ Only escalate to a human when the fix is beyond your capability.
 - [ ] Reference related issues
 
 ## Coding Standards
+
+### Comments
+
+Applies to every source file — Swift, workflow YAML, and shell scripts alike.
+
+- A comment explains the **intent and current behavior** of the code it sits next to.
+- Do **not** narrate a change: what used to be here, what was removed and why, "previously
+  we…", or a reference to the specific CI run, incident, or PR that motivated the edit. Such a
+  comment documents something the reader cannot see, and goes stale the moment the surrounding
+  code changes again.
+- That rationale belongs in the **commit message and PR description** instead — `git log` and
+  `git blame` keep it attached to the change without aging.
+- **Exception**: a comment that stops someone from re-adding something harmful is fine, as long
+  as it states the standing constraint in the present tense — "this job archives for device
+  only, so it must not depend on a simulator runtime" — rather than recounting the removal.
+
+`scripts/guardrails-check.sh` flags added comment lines containing change-narration markers
+(`removed`, `no longer`, `used to`, `previously`, `was redundant`, `instead of the old`). The
+signal is heuristic, so it is **advisory only** and never blocks the commit.
 
 ### Swift
 
